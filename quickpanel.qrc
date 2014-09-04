@@ -1,0 +1,34 @@
+<RCC>
+  <qresource prefix="/">
+    <file>images/angelfish.png</file>
+    <file>images/change_background.png</file>
+    <file>images/change_layout.png</file>
+    <file>images/close.png</file>
+    <file>images/configure.png</file>
+    <file>images/reset.png</file>
+    <file>images/select_widgets.png</file>
+    <file>images/tetrix.png</file>
+    <file>images/hello.png</file>
+    <file>images/user-home.png</file>
+    <file>images/folder-documents.png</file>
+    <file>images/folder-image.png</file>
+    <file>images/folder-sound.png</file>
+    <file>images/httpurl.png</file>
+    <file>images/unknown.png</file>
+    <file>images/new.png</file>
+    <file>images/edit.png</file>
+    <file>images/delete.png</file>
+    <file>images/edit-rename.png</file>
+    <file>images/insert-link.png</file>
+    <file>images/weather/weather-clear.png</file>
+    <file>images/weather/weather-clouds.png</file>
+    <file>images/weather/weather-freezing-rain.png</file>
+    <file>images/weather/weather-many-clouds.png</file>
+    <file>images/weather/weather-none-available.png</file>
+    <file>images/weather/weather-showers.png</file>
+    <file>images/weather/weather-showers-day.png</file>
+    <file>images/weather/weather-snow.png</file>
+    <file>images/weather/weather-snow-rain.png</file>
+    <file>images/weather/weather-storm.png</file>
+  </qresource>
+</RCC>

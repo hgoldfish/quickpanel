@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>TodoListWidget</class>
+ <widget class="QWidget" name="TodoListWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>407</width>
+    <height>289</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>待办事项</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="margin">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="QTreeView" name="tvTodoList">
+     <property name="contextMenuPolicy">
+      <enum>Qt::CustomContextMenu</enum>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::Box</enum>
+     </property>
+     <property name="rootIsDecorated">
+      <bool>false</bool>
+     </property>
+     <property name="uniformRowHeights">
+      <bool>true</bool>
+     </property>
+     <property name="itemsExpandable">
+      <bool>false</bool>
+     </property>
+     <property name="allColumnsShowFocus">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QLineEdit" name="txtTodoSubject"/>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnAddTodo">
+       <property name="text">
+        <string>添加待办事项(&amp;A)</string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>:/images/task-new.png</normaloff>:/images/task-new.png</iconset>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+  <action name="actionEditTodo">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/images/edit.png</normaloff>:/images/edit.png</iconset>
+   </property>
+   <property name="text">
+    <string>编辑/查看待办事项(&amp;E)</string>
+   </property>
+   <property name="iconText">
+    <string>编辑/查看待办事项</string>
+   </property>
+   <property name="toolTip">
+    <string>编辑/查看待办事项</string>
+   </property>
+  </action>
+  <action name="actionCreateTodo">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/images/new.png</normaloff>:/images/new.png</iconset>
+   </property>
+   <property name="text">
+    <string>添加待办事项(&amp;A)</string>
+   </property>
+   <property name="iconText">
+    <string>添加待办事项</string>
+   </property>
+   <property name="toolTip">
+    <string>添加待办事项</string>
+   </property>
+  </action>
+  <action name="actionRemoveTodo">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/images/delete.png</normaloff>:/images/delete.png</iconset>
+   </property>
+   <property name="text">
+    <string>删除待办事项(&amp;R)</string>
+   </property>
+   <property name="iconText">
+    <string>删除待办事项</string>
+   </property>
+   <property name="toolTip">
+    <string>删除待办事项</string>
+   </property>
+  </action>
+  <action name="actionModifyTodoSubject">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/images/edit-rename.png</normaloff>:/images/edit-rename.png</iconset>
+   </property>
+   <property name="text">
+    <string>修改待办事项标题(&amp;T)</string>
+   </property>
+   <property name="iconText">
+    <string>修改待办事项标题</string>
+   </property>
+   <property name="toolTip">
+    <string>修改待办事项标题</string>
+   </property>
+  </action>
+  <action name="actionMarkProcessing">
+   <property name="text">
+    <string>标记为&quot;进行中&quot;(&amp;P)</string>
+   </property>
+   <property name="iconText">
+    <string>标记为&quot;进行中&quot;</string>
+   </property>
+   <property name="toolTip">
+    <string>标记为&quot;进行中&quot;</string>
+   </property>
+  </action>
+  <action name="actionMarkFinished">
+   <property name="text">
+    <string>标记为&quot;已完成&quot;</string>
+   </property>
+  </action>
+  <action name="actionMarkUnfinished">
+   <property name="text">
+    <string>标记为&quot;未开始&quot;</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>txtTodoSubject</sender>
+   <signal>returnPressed()</signal>
+   <receiver>btnAddTodo</receiver>
+   <slot>animateClick()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>140</x>
+     <y>274</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>345</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>WeatherConfigureDialog</class>
+ <widget class="QDialog" name="WeatherConfigureDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>348</width>
+    <height>104</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>配置天气预报</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QFormLayout" name="formLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>搜索来源：</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QComboBox" name="sltSource">
+       <item>
+        <property name="text">
+         <string notr="true">google.com(English)</string>
+        </property>
+        <property name="icon">
+         <iconset resource="../../../dolphin.qrc">
+          <normaloff>:/images/google.png</normaloff>:/images/google.png</iconset>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string notr="true">liqwei.com(中文)</string>
+        </property>
+        <property name="icon">
+         <iconset resource="../../../dolphin.qrc">
+          <normaloff>:/images/liqwei.png</normaloff>:/images/liqwei.png</iconset>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>城市：</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="txtCity"/>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>1</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>88</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnOkay">
+       <property name="text">
+        <string>确定(&amp;O)</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../../../dolphin.qrc">
+         <normaloff>:/images/ok-apply.png</normaloff>:/images/ok-apply.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnCancel">
+       <property name="text">
+        <string>取消(&amp;C)</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../../../dolphin.qrc">
+         <normaloff>:/images/cancel.png</normaloff>:/images/cancel.png</iconset>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="../../../dolphin.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>btnOkay</sender>
+   <signal>clicked()</signal>
+   <receiver>WeatherConfigureDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>219</x>
+     <y>81</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>173</x>
+     <y>51</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>btnCancel</sender>
+   <signal>clicked()</signal>
+   <receiver>WeatherConfigureDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>300</x>
+     <y>81</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>173</x>
+     <y>51</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
