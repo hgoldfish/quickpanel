@@ -43,14 +43,7 @@ class QuickPanelDatabase(Database):
 
     def createInitialData(self, table):
         if table is QuickPanelWidget:
-            caculatorWidget = {}
-            caculatorWidget["id"] = "eb7e96a0-d839-4d8c-9fbf-84c1a81803ae"
-            caculatorWidget["enabled"] = True
-            caculatorWidget["left"] = 20
-            caculatorWidget["top"] = 20
-            caculatorWidget["width"] = 20
-            caculatorWidget["height"] = 10
-            self.insertQuickPanelWidget(caculatorWidget)
+            #init from left to right, and then from top to bottom
 
             desktopIconWidget = {}
             desktopIconWidget["id"] = "dd6afcb0-e223-4156-988d-20f20266c6f0"
@@ -58,17 +51,26 @@ class QuickPanelDatabase(Database):
             desktopIconWidget["left"] = 0
             desktopIconWidget["top"] = 0
             desktopIconWidget["width"] = 20
-            desktopIconWidget["height"] = 20
+            desktopIconWidget["height"] = 22
             self.insertQuickPanelWidget(desktopIconWidget)
 
-            textpadWidget = {}
-            textpadWidget["id"] = "45d1ee54-f9bd-435e-93cf-b46a05b56514"
-            textpadWidget["enabled"] = True
-            textpadWidget["left"] = 0
-            textpadWidget["top"] = 20
-            textpadWidget["width"] = 20
-            textpadWidget["height"] = 10
-            self.insertQuickPanelWidget(textpadWidget)
+            machineLoadWidget = {}
+            machineLoadWidget["id"] = "b0b6b9eb-aec0-4fe5-bfd0-d4d317fdd547"
+            machineLoadWidget["enabled"] = True
+            machineLoadWidget["left"] = 0
+            machineLoadWidget["top"] = 22
+            machineLoadWidget["width"] = 20
+            machineLoadWidget["height"] = 5
+            self.insertQuickPanelWidget(machineLoadWidget)
+
+            calendarWidget = {}
+            calendarWidget["id"] = "d94db588-663b-4a6f-b935-4ca9ff283c75"
+            calendarWidget["enabled"] = True
+            calendarWidget["left"] = 0
+            calendarWidget["top"] = 27
+            calendarWidget["width"] = 20
+            calendarWidget["height"] = 3
+            self.insertQuickPanelWidget(calendarWidget)
 
             quickAccessWidget = {}
             quickAccessWidget["id"] = "be6c197b-0181-47c0-a9fc-6a1fe5f1b3e6"
@@ -76,7 +78,7 @@ class QuickPanelDatabase(Database):
             quickAccessWidget["left"] = 20
             quickAccessWidget["top"] = 0
             quickAccessWidget["width"] = 20
-            quickAccessWidget["height"] = 8
+            quickAccessWidget["height"] = 6
             quickAccessWidget["factory"] = "im.quick_panel.widgets.quick_access.QuickAccessWidget"
             self.insertQuickPanelWidget(quickAccessWidget)
 
@@ -84,10 +86,19 @@ class QuickPanelDatabase(Database):
             todoListWidget["id"] = "bc8ada4f-50b8-49f7-917a-da163b6763e9"
             todoListWidget["enabled"] = True
             todoListWidget["left"] = 20
-            todoListWidget["top"] = 8
+            todoListWidget["top"] = 6
             todoListWidget["width"] = 20
-            todoListWidget["height"] = 12
+            todoListWidget["height"] = 16
             self.insertQuickPanelWidget(todoListWidget)
+
+            textpadWidget = {}
+            textpadWidget["id"] = "45d1ee54-f9bd-435e-93cf-b46a05b56514"
+            textpadWidget["enabled"] = True
+            textpadWidget["left"] = 20
+            textpadWidget["top"] = 22
+            textpadWidget["width"] = 20
+            textpadWidget["height"] = 8
+            self.insertQuickPanelWidget(textpadWidget)
 
     def getWidgetConfig(self, id):
         rows = self.selectQuickPanelWidget("where id=?", id)

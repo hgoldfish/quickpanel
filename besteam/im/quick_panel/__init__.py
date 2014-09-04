@@ -283,10 +283,13 @@ class QuickPanel(QWidget, WidgetManager):
         painter.drawImage(event.rect(), self._background_image, event.rect())
 
     def keyPressEvent(self, event):
-        if event.key() == Qt.Key_Escape:
-            self.close()
-            return
         QWidget.keyPressEvent(self, event)
+        if not event.isAccepted() and event.key() == Qt.Key_Escape:
+            if self.layoutEditor.isVisible():
+                self.leaveLayoutEditor()
+                self.actionChangeLayout.setChecked(False)
+            else:
+                self.close()
 
     def onWindowFocusChanged(self, old, new):
         "实现类似于Qt.Popup那样点击其它窗口就立即关闭本窗口的效果。"
@@ -455,6 +458,7 @@ class QuickPanel(QWidget, WidgetManager):
         d.setGeometry(r)
         d.setWindowFlags(Qt.Widget)
         d.setParent(container)
+        d.setFocus(Qt.OtherFocusReason)
         try:
             shutter.show()
             d.raise_()

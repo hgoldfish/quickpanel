@@ -44,7 +44,8 @@ class DesktopIconWidget(QFrame):
         self.listView.setMovement(QListView.Snap)
         self.listView.setFlow(QListView.LeftToRight)
         self.listView.setResizeMode(QListView.Adjust)
-        self.listView.setGridSize(QSize(70, 70))
+        self.listView.setGridSize(QSize(self.logicalDpiX() / 96 * 70,
+                                        self.logicalDpiY() / 96 * 70))
         self.listView.setViewMode(QListView.IconMode)
 
         self.quickDesktopModel = QuickDesktopModel(self.window().platform.databaseFile)
@@ -238,10 +239,9 @@ def getShortcutIcon(shortcut):
                 icon = iconProvider.icon(QFileInfo(url.toLocalFile()))
                 if not icon.isNull():
                     return icon
-                else:
-                    return QIcon(":/images/unknown.png")
-            else:
-                return QIcon(":/images/httpurl.png")
+            return QIcon(":/images/unknown.png")
+        else:
+            return QIcon(":/images/httpurl.png")
     return QIcon(":/images/unknown.png")
 
 class QuickDesktopModel(QAbstractListModel):
@@ -385,6 +385,11 @@ class ShortcutDialog(QDialog, Ui_ShortcutDialog):
             return getattr(self, "exec")()
         except AttributeError:
             return getattr(self, "exec_")()
+
+    def showEvent(self, event):
+        if self.mode == "create":
+            self.browsePath()
+        return QDialog.showEvent(self, event)
 
     def edit(self, shortcut):
         self.mode = "edit"
@@ -559,7 +564,6 @@ class BookmarkDialog(QDialog, Ui_BookmarkDialog):
         self.txtLink.setFocus(Qt.OtherFocusReason)
 
     def create(self):
-        self.btnOkay.setText(self.trUtf8("创建(&O)"))
         try:
             return getattr(self, "exec_")()
         except AttributeError:
@@ -568,7 +572,6 @@ class BookmarkDialog(QDialog, Ui_BookmarkDialog):
     def edit(self, bookmark):
         self.txtName.setText(bookmark["name"])
         self.txtLink.setText(bookmark["path"])
-        self.btnOkay.setText(self.trUtf8("保存(&O)"))
         try:
             return getattr(self, "exec_")()
         except AttributeError:

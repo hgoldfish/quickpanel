@@ -50,6 +50,11 @@ class TodoListWidget(QWidget, Ui_TodoListWidget):
         self.actionMarkProcessing.triggered.connect(self.markProcessing)
         self.btnAddTodo.clicked.connect(self.addTodoQuickly)
         self.todoListModel.taskUpdated.connect(self.backend.updateTaskById)
+        self.chkShowAll.toggled.connect(self.setShowAll)
+
+    def setShowAll(self, showAll):
+        self.backend.setShowAll(showAll)
+        self.todoListModel.updateTodoList(self.backend.listTodo())
 
     def showEvent(self, event):
         self.todoListModel.updateTodoList(self.backend.listTodo())
@@ -87,11 +92,11 @@ class TodoListWidget(QWidget, Ui_TodoListWidget):
         task = self.todoListModel.taskAt(currentIndex)
         if task is None:
             return
-        if self.backend.editTask(task):
+        if self.backend.editTask(self, task):
             self.todoListModel.updateTodo(currentIndex)
 
     def createTodo(self):
-        task = self.backend.createTodo()
+        task = self.backend.createTodo(self)
         if task is None:
             return
         index = self.todoListModel.appendTodo(task)

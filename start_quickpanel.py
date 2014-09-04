@@ -9,7 +9,14 @@ try:
 except NameError:
     pass
 
-import sys, logging, os
+import sys, logging, os, sip
+sip.setapi("QString", 2)
+sip.setapi("QVariant", 2)
+sip.setapi("QTextStream", 2)
+sip.setapi("QUrl", 2)
+sip.setapi("QDateTime", 2)
+sip.setapi("QDate", 2)
+
 from PyQt4.QtCore import QObject, pyqtSignal
 from PyQt4.QtGui import QApplication, QFont,  QIcon, QSystemTrayIcon, \
         QAction, QMenu, QPushButton, QLabel, QDialog, QSizePolicy, \

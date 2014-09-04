@@ -87,7 +87,7 @@ class TetrixWindow(QtGui.QWidget):
         self.setLayout(layout1)
 
         self.setWindowTitle(self.trUtf8("俄罗斯方块(Tetrix)"))
-        self.resize(280, 380)
+        self.resize(self.logicalDpiX() / 96 * 275, self.logicalDpiY() / 96 * 380)
 
         r = self.geometry()
         r.moveCenter(QtGui.qApp.desktop().screenGeometry().center())

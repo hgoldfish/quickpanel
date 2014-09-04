@@ -8,7 +8,7 @@ try:
 except NameError:
     pass
 
-import os, ctypes
+import os, ctypes, io
 from PyQt4.QtCore import QPoint, QRect, QTimer, Qt
 from PyQt4.QtGui import QPainter, QPen, QPolygon, QWidget
 
@@ -157,6 +157,35 @@ if os.name == "nt":
             if (b + c) == 0:
                 return 1
             return (b + c - a) / (b + c)
+
+elif os.path.exists("/proc/stat"):
+    class MachineLoad:
+        _instance = None
+        lastStatics = None
+
+        @staticmethod
+        def getInstance():
+            if MachineLoad._instance is None:
+                MachineLoad._instance = MachineLoad()
+            return MachineLoad._instance
+
+        def getLoad(self):
+            try:
+                with io.open("/proc/stat", encoding = "ascii") as statfile:
+                    firstline = statfile.readline()
+                    if firstline.endswith("\n"):
+                        firstline = firstline[:-1]
+                    statics = list(map(int, firstline.split()[1:8]))
+                    if self.lastStatics is None:
+                        self.lastStatics = statics
+                        return 0.0
+                    delta = list(map(lambda new, old: new - old, statics, self.lastStatics))
+                    self.lastStatics = statics
+                    user, nice, system, idle, iowait, irq, softirq = delta
+                    return (sum(delta) - idle) / sum(delta)
+            except:
+                return 0
+
 else:
     class MachineLoad:
         _instance = None

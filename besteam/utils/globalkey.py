@@ -26,6 +26,7 @@ else:
             catched = pyqtSignal(int)
 
             def __init__(self):
+                super(GlobalKey, self).__init__()
                 self.nextId = 0
 
             def close(self):

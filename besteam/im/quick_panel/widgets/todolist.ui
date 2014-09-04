@@ -47,11 +47,18 @@
      <item>
       <widget class="QPushButton" name="btnAddTodo">
        <property name="text">
-        <string>添加待办事项(&amp;A)</string>
+        <string>添加</string>
        </property>
        <property name="icon">
         <iconset>
          <normaloff>:/images/task-new.png</normaloff>:/images/task-new.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="chkShowAll">
+       <property name="text">
+        <string>显示完成项</string>
        </property>
       </widget>
      </item>

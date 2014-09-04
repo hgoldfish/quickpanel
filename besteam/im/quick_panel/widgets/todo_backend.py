@@ -9,7 +9,7 @@ except NameError:
     pass
 
 import uuid
-from PyQt4.QtGui import QDialog, QMessageBox
+from PyQt4.QtGui import QDialog, QMessageBox, QDialogButtonBox
 from besteam.utils.sql import Database, Table
 from .Ui_todo_editor import Ui_SimpleTodoEditor
 
@@ -27,20 +27,29 @@ class SimpleTodoDatabas(Database):
 class SimpleBackend:
     def __init__(self, databaseFile):
         self.db = SimpleTodoDatabas(databaseFile)
+        self.showAll = False
 
-    def editTask(self, task):
-        d = SimpleTodoEditor()
-        if d.edit(task) == QDialog.Accepted:
+    def editTask(self, parent, task):
+        d = SimpleTodoEditor(parent)
+        quickpanel = parent.window()
+        result = quickpanel.runDialog(d.edit, task)
+        if result == QDialog.Accepted:
             task.update(d.getResult())
+            d.deleteLater()
             return True
+        d.deleteLater()
         return False
 
-    def createTodo(self):
-        d = SimpleTodoEditor()
-        if d.create() == QDialog.Accepted:
+    def createTodo(self, parent):
+        d = SimpleTodoEditor(parent)
+        quickpanel = parent.window()
+        result = quickpanel.runDialog(d.create)
+        if result == QDialog.Accepted:
             task = d.getResult()
             task["id"] = str(uuid.uuid4())
+            d.deleteLater()
             return self.db.insertSimpleTodo(task)
+        d.deleteLater()
         return None
 
     def createTodoQuickly(self, subject):
@@ -57,7 +66,7 @@ class SimpleBackend:
     def listTodo(self):
         todoList = []
         for todo in self.db.selectSimpleTodo(""):
-            if todo["finishment"] == 100:
+            if not self.showAll and todo["finishment"] == 100:
                 continue
             todoList.append(todo)
         return todoList
@@ -66,15 +75,16 @@ class SimpleBackend:
         #不需要刷新其它界面
         pass
 
+    def setShowAll(self, showAll):
+        self.showAll = showAll
 
 class SimpleTodoEditor(QDialog, Ui_SimpleTodoEditor):
-    def __init__(self):
-        QDialog.__init__(self) #TODO 选择一个parent
+    def __init__(self, parent):
+        QDialog.__init__(self, parent)
         self.setupUi(self)
 
     def edit(self, task):
         self.setWindowTitle(self.trUtf8("编辑待办事项"))
-        self.btnSave.setText(self.trUtf8("保存(&S)"))
         self.txtSubject.setText(task["subject"])
         if task["finishment"] == 0:
             self.rdoUnfinished.setChecked(True)
@@ -89,7 +99,8 @@ class SimpleTodoEditor(QDialog, Ui_SimpleTodoEditor):
 
     def create(self):
         self.setWindowTitle(self.trUtf8("创建待办事项"))
-        self.btnSave.setText(self.trUtf8("创建(&C)"))
+        btnSave = self.buttonBox.button(QDialogButtonBox.Save)
+        btnSave.setText(self.trUtf8("创建(&C)"))
         self.rdoUnfinished.setChecked(True)
         try:
             return getattr(self, "exec")()

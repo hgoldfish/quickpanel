@@ -1,4 +1,3 @@
-#!c:/python26/python.exe
 # -*- coding:utf-8 -*-
 from __future__ import print_function
 from __future__ import unicode_literals
