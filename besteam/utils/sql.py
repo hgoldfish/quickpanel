@@ -57,6 +57,13 @@ __all__ = ["Table", "Database", "DatabaseException", "transaction", "DataObject"
 sql_debug = False
 logger = logging.getLogger(__name__)
 
+
+def pickle_dumps(o):
+    return pickle.dumps(o, 2)
+    
+def pickle_loads(s):
+    return pickle.loads(s)
+
 class DictProxy:
     def setTarget(self, dataObject):
         self.__target = dataObject
@@ -132,8 +139,8 @@ if usingPyQt4:
     sqlite3.register_adapter(QDateTime, adapt_QDateTime)
     sqlite3.register_adapter(QDate, adapt_QDate)
 sqlite3.register_adapter(bool, adapt_bool)
-sqlite3.register_adapter(list, pickle.dumps)
-sqlite3.register_adapter(dict, pickle.dumps)
+sqlite3.register_adapter(list, pickle_dumps)
+sqlite3.register_adapter(dict, pickle_dumps)
 if sys.version_info[0] < 3: #python 2.x的bug，不接受unicode类型的参数
     if usingPyQt4:
         sqlite3.register_converter(b"QDateTime", convert_QDateTime)

@@ -105,7 +105,7 @@ class _Settings(QObject):
             if not item.dirty:
                 continue
             self.db.deletePreference("where key=?", item.key)
-            self.db.insertPreference({"key":item.key, "value":pickle.dumps(item.value)})
+            self.db.insertPreference({"key":item.key, "value":pickle.dumps(item.value, 2)})
             item.dirty = False
 
 class Settings:
