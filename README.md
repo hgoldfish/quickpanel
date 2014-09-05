@@ -1,6 +1,6 @@
 Quickpanel is a small popup desktop which supports widgets and desktop icons. When activated, it is shown at the center of screen.
 
-[screenshort](http://besteam.im/static/quickpanel_screenshot.png)
+[screenshort](http://hgoldfish.com/static/quickpanel_screenshot.png)
 
 Quickpanel can be run in KDE desktop and windows.
 
