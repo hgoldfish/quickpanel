@@ -6,12 +6,12 @@ Quickpanel can be run in KDE desktop and windows.
 
 Use it in KDE Desktop:
 
-    $ zypper install python-qt4-devel python-kde4
+    $ zypper install python-qt5-devel python-kde5
 
     $ git clone git@github.com:hgoldfish/quickpanel.git
     $ cd quickpanel
-    $ python compile_files.py
-    $ python start_quickpanel.py
+    $ python3 compile_files.py
+    $ python3 start_quickpanel.py
 
 After quickpanel started, a system tray icon shown at the right bottom of your desktop. Click it or press Alt + `, shows the quickpanel.
 
