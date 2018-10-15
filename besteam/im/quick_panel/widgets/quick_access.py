@@ -1,15 +1,5 @@
-# -*- coding:utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import division
-from __future__ import absolute_import
-try:
-    str = unicode
-except NameError:
-    pass
-
-from PyQt4.QtCore import QSize
-from PyQt4.QtGui import QFrame, QListView, QHBoxLayout
+from PyQt5.QtCore import QSize
+from PyQt5.QtWidgets import QFrame, QListView, QHBoxLayout
 
 __all__ = ["QuickAccessWidget"]
 

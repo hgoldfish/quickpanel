@@ -1,16 +1,7 @@
-# -*- coding:utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import division
-from __future__ import absolute_import
-try:
-    str = unicode
-except NameError:
-    pass
-
-from PyQt4.QtCore import QAbstractTableModel, QModelIndex, Qt, pyqtSignal
-from PyQt4.QtGui import QComboBox, QHeaderView, QMenu, QMessageBox, QStyledItemDelegate, \
-        QWidget, QCursor
+from PyQt5.QtCore import QAbstractTableModel, QModelIndex, Qt, pyqtSignal
+from PyQt5.QtGui import QCursor
+from PyQt5.QtWidgets import QComboBox, QHeaderView, QMenu, QMessageBox, QStyledItemDelegate, \
+        QWidget
 from .todo_backend import SimpleBackend
 from .Ui_todolist import Ui_TodoListWidget
 
@@ -34,7 +25,7 @@ class TodoListWidget(QWidget, Ui_TodoListWidget):
         self.todoListDelegate = TodoListDelegate()
         self.todoListModel.updateTodoList(self.backend.listTodo())
         self.tvTodoList.setModel(self.todoListModel)
-        self.tvTodoList.header().setResizeMode(QHeaderView.ResizeToContents)
+        self.tvTodoList.header().setSectionResizeMode(QHeaderView.ResizeToContents)
         self.tvTodoList.setItemDelegate(self.todoListDelegate)
         self.makeConnections()
         self.setStyleSheet("QTreeView {background:transparent;}")
@@ -139,7 +130,7 @@ class TodoListWidget(QWidget, Ui_TodoListWidget):
     def addTodoQuickly(self):
         subject = self.txtTodoSubject.text().strip()
         if subject == "":
-            QMessageBox.information(self, self.trUtf8("添加待办事项"), self.trUtf8("不能添加空的待办事项。"))
+            QMessageBox.information(self, self.tr("添加待办事项"), self.tr("不能添加空的待办事项。"))
             return
         task = self.backend.createTodoQuickly(subject)
         index = self.todoListModel.appendTodo(task)
@@ -173,11 +164,11 @@ class TodoListModel(QAbstractTableModel):
         elif index.column() == 0 and role in (Qt.DisplayRole, Qt.EditRole):
             finishment = self.todoList[index.row()]["finishment"]
             if finishment == 0:
-                state = self.trUtf8("未开始")
+                state = self.tr("未开始")
             elif finishment == 100:
-                state = self.trUtf8("已完成")
+                state = self.tr("已完成")
             else:
-                state = self.trUtf8("进行中")
+                state = self.tr("进行中")
             return state
         return None
 
@@ -185,9 +176,9 @@ class TodoListModel(QAbstractTableModel):
         if role == Qt.EditRole and index.isValid():
             task = self.todoList[index.row()]
             if index.column() == 0:
-                if value == self.trUtf8("未开始"):
+                if value == self.tr("未开始"):
                     task["finishment"] = 0
-                elif value == self.trUtf8("已完成"):
+                elif value == self.tr("已完成"):
                     task["finishment"] = 100
                 else:
                     task["finishment"] = 50
@@ -207,15 +198,16 @@ class TodoListModel(QAbstractTableModel):
     def headerData(self, section, orientation, role):
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
             if section == 0:
-                return self.trUtf8("完成状态") #注意标题宽度要大于编辑完成状态时显示的QComboBox
+                return self.tr("完成状态") #注意标题宽度要大于编辑完成状态时显示的QComboBox
             elif section == 1:
-                return self.trUtf8("标题")
+                return self.tr("标题")
         return None
 
     def updateTodoList(self, todoList):
         "更新待办事项列表。当快捷面板被显示时，刷新列表内容。"
+        self.beginResetModel()
         self.todoList = todoList
-        self.reset()
+        self.endResetModel()
 
     def todoAt(self, index):
         assert index.isValid()
@@ -246,7 +238,7 @@ class TodoListDelegate(QStyledItemDelegate):
     def createEditor(self, parent, option, index):
         if index.isValid() and index.column() == 0:
             finishmentWidget = QComboBox(parent)
-            finishmentWidget.addItems([self.trUtf8("已完成"), self.trUtf8("进行中"), self.trUtf8("未完成")])
+            finishmentWidget.addItems([self.tr("已完成"), self.tr("进行中"), self.tr("未完成")])
             return finishmentWidget
         return QStyledItemDelegate.createEditor(self, parent, option, index)
 

@@ -1,23 +1,13 @@
-# -*- coding:utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import division
-from __future__ import absolute_import
-try:
-    str = unicode
-except NameError:
-    pass
+import os
+import functools
+import logging
+import ctypes
+from PyQt5.QtCore import QAbstractListModel, QModelIndex, QRect, QTimer, Qt, QStandardPaths
+from PyQt5.QtGui import  QBrush, QColor, QImage, QPainter, QPen, QIcon, QDesktopServices
+from PyQt5.QtWidgets import QApplication, QDialog, QMessageBox,  \
+        QSizePolicy, QToolBar, QWidget, QAction, QHBoxLayout, \
+        QVBoxLayout, QLabel, QFileDialog
 
-"""
-当用户按下快捷键或者点击任务栏的菜单时弹出的一个快捷面板，类似于桌面。但是上面有一些部件。
-总体目标是把KDE的桌面移到Windows下。
-"""
-
-import os, functools, logging, ctypes
-from PyQt4.QtCore import QAbstractListModel, QModelIndex, QRect, QTimer, Qt
-from PyQt4.QtGui import QApplication, QBrush, QColor, QDialog, QImage, QMessageBox, QPainter, \
-        QPen, QSizePolicy, QToolBar, QWidget, qApp, QAction, QIcon, QHBoxLayout, \
-        QVBoxLayout, QLabel, QFileDialog, QDesktopServices
 from .layout_editor import LayoutEditor
 from .canvas import Canvas
 from .services import WidgetConfigure, QuickPanelDatabase
@@ -28,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 def moveToCenter(window):
     r = window.geometry()
-    r.moveCenter(qApp.desktop().screenGeometry().center())
+    r.moveCenter(QApplication.instance().desktop().screenGeometry().center())
     window.setGeometry(r)
 
 class WidgetManager:
@@ -41,29 +31,25 @@ class WidgetManager:
         from besteam.im.quick_panel.widgets.quick_access import QuickAccessWidget
         from besteam.im.quick_panel.widgets.textpad import TextpadWidget
         from besteam.im.quick_panel.widgets.desktop_icon import DesktopIconWidget
-        from besteam.im.quick_panel.widgets.weather import WeatherWidget
         from besteam.im.quick_panel.widgets.machine_load import MachineLoadWidget
         from besteam.im.quick_panel.widgets.calendar import CalendarWidget
-        self.registerWidget("bc8ada4f-50b8-49f7-917a-da163b6763e9", self.trUtf8("待办事项列表"), \
-                self.trUtf8("用于纪录当前正在进行中的待办事项。"), \
+        self.registerWidget("bc8ada4f-50b8-49f7-917a-da163b6763e9", self.tr("待办事项列表"), \
+                self.tr("用于纪录当前正在进行中的待办事项。"), \
                 TodoListWidget)
-        self.registerWidget("be6c197b-0181-47c0-a9fc-6a1fe5f1b3e6", self.trUtf8("Besteam快捷方式"), \
-                self.trUtf8("快捷启动Besteam的附加工具。"), \
+        self.registerWidget("be6c197b-0181-47c0-a9fc-6a1fe5f1b3e6", self.tr("Besteam快捷方式"), \
+                self.tr("快捷启动Besteam的附加工具。"), \
                 QuickAccessWidget)
-        self.registerWidget("45d1ee54-f9bd-435e-93cf-b46a05b56514", self.trUtf8("文本框"), \
-                self.trUtf8("简单纪录文本。退出Besteam被丢弃。"), \
+        self.registerWidget("45d1ee54-f9bd-435e-93cf-b46a05b56514", self.tr("文本框"), \
+                self.tr("简单纪录文本。退出Besteam被丢弃。"), \
                 TextpadWidget)
-        self.registerWidget("dd6afcb0-e223-4156-988d-20f20266c6f0", self.trUtf8("桌面快捷方式"), \
-                self.trUtf8("启动外部程序。"), \
+        self.registerWidget("dd6afcb0-e223-4156-988d-20f20266c6f0", self.tr("桌面快捷方式"), \
+                self.tr("启动外部程序。"), \
                 DesktopIconWidget)
-        self.registerWidget("35e3397b-500e-4bcc-97d9-4f84997e1e46", self.trUtf8("天气预报"), \
-                self.trUtf8("简单的天气预报，能够预报三天内的天气。"), \
-                WeatherWidget)
-        self.registerWidget("b0b6b9eb-aec0-4fe5-bfd0-d4d317fdd547", self.trUtf8("CPU使用率"), \
-                self.trUtf8("以折线的形式显示一段时间内的CPU使用率。"), \
+        self.registerWidget("b0b6b9eb-aec0-4fe5-bfd0-d4d317fdd547", self.tr("CPU使用率"), \
+                self.tr("以折线的形式显示一段时间内的CPU使用率。"), \
                 MachineLoadWidget)
-        self.registerWidget("d94db588-663b-4a6f-b935-4ca9ff283c75", self.trUtf8("现在时间"),\
-                self.trUtf8("显示当前时间。"), \
+        self.registerWidget("d94db588-663b-4a6f-b935-4ca9ff283c75", self.tr("现在时间"),\
+                self.tr("显示当前时间。"), \
                 CalendarWidget)
         logger.debug("All builtin widgets have been registered.")
 
@@ -197,35 +183,35 @@ class QuickPanel(QWidget, WidgetManager):
     def createActions(self):
         self.actionChangeBackground = QAction(self)
         self.actionChangeBackground.setIcon(QIcon(":/images/change_background.png"))
-        self.actionChangeBackground.setText(self.trUtf8("Change &Background"))
-        self.actionChangeBackground.setIconText(self.trUtf8("Background"))
-        self.actionChangeBackground.setToolTip(self.trUtf8("Change Background"))
+        self.actionChangeBackground.setText(self.tr("Change &Background"))
+        self.actionChangeBackground.setIconText(self.tr("Background"))
+        self.actionChangeBackground.setToolTip(self.tr("Change Background"))
         self.actionClose = QAction(self)
         self.actionClose.setIcon(QIcon(":/images/close.png"))
-        self.actionClose.setText(self.trUtf8("&Close"))
-        self.actionClose.setIconText(self.trUtf8("Close"))
-        self.actionClose.setToolTip(self.trUtf8("Close"))
+        self.actionClose.setText(self.tr("&Close"))
+        self.actionClose.setIconText(self.tr("Close"))
+        self.actionClose.setToolTip(self.tr("Close"))
         self.actionChangeLayout = QAction(self)
         self.actionChangeLayout.setIcon(QIcon(":/images/change_layout.png"))
-        self.actionChangeLayout.setText(self.trUtf8("Change &Layout"))
-        self.actionChangeLayout.setIconText(self.trUtf8("Layout"))
-        self.actionChangeLayout.setToolTip(self.trUtf8("Change Layout"))
+        self.actionChangeLayout.setText(self.tr("Change &Layout"))
+        self.actionChangeLayout.setIconText(self.tr("Layout"))
+        self.actionChangeLayout.setToolTip(self.tr("Change Layout"))
         self.actionChangeLayout.setCheckable(True)
         self.actionSelectWidgets = QAction(self)
         self.actionSelectWidgets.setIcon(QIcon(":/images/select_widgets.png"))
-        self.actionSelectWidgets.setText(self.trUtf8("&Select Widgets"))
-        self.actionSelectWidgets.setIconText(self.trUtf8("Widgets"))
-        self.actionSelectWidgets.setToolTip(self.trUtf8("Select Widgets"))
+        self.actionSelectWidgets.setText(self.tr("&Select Widgets"))
+        self.actionSelectWidgets.setIconText(self.tr("Widgets"))
+        self.actionSelectWidgets.setToolTip(self.tr("Select Widgets"))
         self.actionResetBackground = QAction(self)
         self.actionResetBackground.setIcon(QIcon(":/images/reset.png"))
-        self.actionResetBackground.setText(self.trUtf8("&Reset Background"))
-        self.actionResetBackground.setIconText(self.trUtf8("Reset"))
-        self.actionResetBackground.setToolTip(self.trUtf8("Reset Background"))
+        self.actionResetBackground.setText(self.tr("&Reset Background"))
+        self.actionResetBackground.setIconText(self.tr("Reset"))
+        self.actionResetBackground.setToolTip(self.tr("Reset Background"))
         self.actionResetDefaultLayout = QAction(self)
         self.actionResetDefaultLayout.setIcon(QIcon(":/images/reset.png"))
-        self.actionResetDefaultLayout.setText(self.trUtf8("Reset &Layout"))
-        self.actionResetDefaultLayout.setIconText(self.trUtf8("Reset"))
-        self.actionResetDefaultLayout.setToolTip(self.trUtf8("Reset Layout"))
+        self.actionResetDefaultLayout.setText(self.tr("Reset &Layout"))
+        self.actionResetDefaultLayout.setIconText(self.tr("Reset"))
+        self.actionResetDefaultLayout.setToolTip(self.tr("Reset Layout"))
 
     def createControls(self):
         self.toolBarMain = QToolBar(self)
@@ -276,7 +262,7 @@ class QuickPanel(QWidget, WidgetManager):
         self.actionResetBackground.triggered.connect(self.useDefaultBackground)
         self.actionSelectWidgets.triggered.connect(self.selectWidgets)
         self.actionResetDefaultLayout.triggered.connect(self.resetDefaultLayout)
-        qApp.focusChanged.connect(self.onWindowFocusChanged)
+        QApplication.instance().focusChanged.connect(self.onWindowFocusChanged)
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -302,10 +288,10 @@ class QuickPanel(QWidget, WidgetManager):
         if key is not None:
             if os.name == "nt": #在Windows系统下，Meta键习惯叫Win键
                 key = key.replace("Meta", "Win")
-            title = self.trUtf8("提示：在任何位置按<b>{0}</b>打开快捷面板。").format(key)
+            title = self.tr("提示：在任何位置按<b>{0}</b>打开快捷面板。").format(key)
             self.lblTitle.setText('<span style=" font-size:14pt;font-style:italic;">{0}</span>'.format(title))
         else:
-            title = self.trUtf8("快捷面板")
+            title = self.tr("快捷面板")
             self.lblTitle.setText('<span style=" font-size:14pt;font-style:italic;">{0}</span>'.format(title))
 
         #如果有时候运行全屏程序，快捷面板的位置就会发生改变
@@ -380,19 +366,19 @@ class QuickPanel(QWidget, WidgetManager):
             self.leaveLayoutEditor()
 
     def changeBackground(self):
-        filename = QFileDialog.getOpenFileName(self, self.trUtf8("Change Background"), \
-            QDesktopServices.storageLocation(QDesktopServices.PicturesLocation), \
-            self.trUtf8("Image Files (*.png *.gif *.jpg *.jpeg *.bmp *.mng *ico)"))
-        if filename == "":
+        filename, selectedFilter = QFileDialog.getOpenFileName(self, self.tr("Change Background"), \
+            QStandardPaths.writableLocation(QStandardPaths.PicturesLocation), \
+            self.tr("Image Files (*.png *.gif *.jpg *.jpeg *.bmp *.mng *ico)"))
+        if not filename:
             return
         image = QImage(filename)
         if image.isNull():
-            QMessageBox.information(self, self.trUtf8("Change Background"), \
-                    self.trUtf8("不能读取图像文件，请检查文件格式是否正确，或者图片是否已经损坏。"))
+            QMessageBox.information(self, self.tr("Change Background"), \
+                    self.tr("不能读取图像文件，请检查文件格式是否正确，或者图片是否已经损坏。"))
             return
         if image.width() < 800 or image.height() < 600:
-            answer = QMessageBox.information(self, self.trUtf8("Change Background"), \
-                    self.trUtf8("不建议设置小于800x600的图片作为背景图案。如果继续，可能会使快捷面板显示错乱。是否继续？"),
+            answer = QMessageBox.information(self, self.tr("Change Background"), \
+                    self.tr("不建议设置小于800x600的图片作为背景图案。如果继续，可能会使快捷面板显示错乱。是否继续？"),
                     QMessageBox.Yes | QMessageBox.No,
                     QMessageBox.No)
             if answer == QMessageBox.No:

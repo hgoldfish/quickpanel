@@ -1,21 +1,4 @@
-# -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import division
-from __future__ import absolute_import
-try:
-    str = unicode
-except NameError:
-    pass
-
-try:
-    from PyQt4.QtCore import QObject, QTimer
-except ImportError:
-    try:
-        from PyQt5.QtCore import QObject, QTimer
-    except ImportError:
-        class QObject: pass
-        QTimer = None
+from PyQt5.QtCore import QObject, QTimer
 
 import pickle
 from besteam.utils.sql import transaction, Table, Database

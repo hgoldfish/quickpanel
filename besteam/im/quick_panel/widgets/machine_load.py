@@ -1,16 +1,9 @@
-# -*- coding:utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import division
-from __future__ import absolute_import
-try:
-    str = unicode
-except NameError:
-    pass
-
-import os, ctypes, io
-from PyQt4.QtCore import QPoint, QRect, QTimer, Qt
-from PyQt4.QtGui import QPainter, QPen, QPolygon, QWidget
+import os
+import ctypes
+import io
+from PyQt5.QtCore import QPoint, QRect, QTimer, Qt
+from PyQt5.QtGui import QPainter, QPen, QPolygon
+from PyQt5.QtWidgets import QWidget
 
 __all__ = ["MachineLoadWidget"]
 

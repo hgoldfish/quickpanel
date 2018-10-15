@@ -1,27 +1,11 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import division
-from __future__ import absolute_import
-try:
-    str = unicode
-except NameError:
-    pass
-
-import sys, logging, os, sip
-sip.setapi("QString", 2)
-sip.setapi("QVariant", 2)
-sip.setapi("QTextStream", 2)
-sip.setapi("QUrl", 2)
-sip.setapi("QDateTime", 2)
-sip.setapi("QDate", 2)
-
-from PyQt4.QtCore import QObject, pyqtSignal
-from PyQt4.QtGui import QApplication, QFont,  QIcon, QSystemTrayIcon, \
-        QAction, QMenu, QPushButton, QLabel, QDialog, QSizePolicy, \
-        QKeySequence, QDialogButtonBox, QVBoxLayout, QHBoxLayout, \
-        QMessageBox, QDesktopServices
+import sys
+import logging
+import os
+from PyQt5.QtCore import QObject, pyqtSignal, QStandardPaths
+from PyQt5.QtGui import QFont,  QIcon, QKeySequence
+from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QPushButton, QLabel, QDialog, QSizePolicy, \
+        QDialogButtonBox, QVBoxLayout, QHBoxLayout, QAction,  QMessageBox
 import quickpanel_rc; quickpanel_rc
 from besteam.utils.settings import Settings, _Settings
 from besteam.utils.globalkey import GlobalKey
@@ -72,15 +56,15 @@ class ConfigureDialog(QDialog):
 class Platform(QObject):
     def __init__(self):
         QObject.__init__(self)
-        documentsLocation = QDesktopServices.storageLocation(QDesktopServices.DocumentsLocation)
+        documentsLocation = QStandardPaths.writableLocation(QStandardPaths.DocumentsLocation)
         self.databaseFile = os.path.join(documentsLocation, "quickpanel.db")
         self._settings = _Settings(self.databaseFile)
         self.globalKey = GlobalKey()
         self.quickPanel = QuickPanel(self)
         self.actionConfigure = QAction(QIcon(":/images/configure.png"), \
-                self.trUtf8("&Configure"), self)
+                self.tr("&Configure"), self)
         self.actionExit = QAction(QIcon(":/images/close.png"), \
-                self.trUtf8("&Exit"), self)
+                self.tr("&Exit"), self)
         self.trayIcon = QSystemTrayIcon(QIcon(":/images/angelfish.png"))
         self.contextMenu = QMenu()
         self.contextMenu.addAction(self.actionConfigure)
@@ -95,9 +79,9 @@ class Platform(QObject):
         self.trayIcon.show()
         self.quickPanel.initWidgets()
         logger.info("QuickPanel is launched.")
-        self.quickPanel.addQuickAccessShortcut(self.trUtf8("Tetrix"), \
+        self.quickPanel.addQuickAccessShortcut(self.tr("Tetrix"), \
                 QIcon(":/images/tetrix.png"), self.startTetrix)
-        self.quickPanel.addQuickAccessShortcut(self.trUtf8("Hello"), \
+        self.quickPanel.addQuickAccessShortcut(self.tr("Hello"), \
                 QIcon(":/images/hello.png"), self.sayHello)
 
     def startTetrix(self):
@@ -107,8 +91,8 @@ class Platform(QObject):
         self.tetrixWindow.activateWindow()
 
     def sayHello(self):
-        QMessageBox.information(None, self.trUtf8("Say Hello."), \
-                self.trUtf8("Hello, world!"))
+        QMessageBox.information(None, self.tr("Say Hello."), \
+                self.tr("Hello, world!"))
 
     def loadSettings(self):
         settings = self.getSettings()

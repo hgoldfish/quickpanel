@@ -1,15 +1,5 @@
-# -*- coding:utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import division
-from __future__ import absolute_import
-try:
-    str = unicode
-except NameError:
-    pass
-
 import uuid
-from PyQt4.QtGui import QDialog, QMessageBox, QDialogButtonBox
+from PyQt5.QtWidgets import QDialog, QMessageBox, QDialogButtonBox
 from besteam.utils.sql import Database, Table
 from .Ui_todo_editor import Ui_SimpleTodoEditor
 
@@ -84,7 +74,7 @@ class SimpleTodoEditor(QDialog, Ui_SimpleTodoEditor):
         self.setupUi(self)
 
     def edit(self, task):
-        self.setWindowTitle(self.trUtf8("编辑待办事项"))
+        self.setWindowTitle(self.tr("编辑待办事项"))
         self.txtSubject.setText(task["subject"])
         if task["finishment"] == 0:
             self.rdoUnfinished.setChecked(True)
@@ -98,9 +88,9 @@ class SimpleTodoEditor(QDialog, Ui_SimpleTodoEditor):
             return getattr(self, "exec_")()
 
     def create(self):
-        self.setWindowTitle(self.trUtf8("创建待办事项"))
+        self.setWindowTitle(self.tr("创建待办事项"))
         btnSave = self.buttonBox.button(QDialogButtonBox.Save)
-        btnSave.setText(self.trUtf8("创建(&C)"))
+        btnSave.setText(self.tr("创建(&C)"))
         self.rdoUnfinished.setChecked(True)
         try:
             return getattr(self, "exec")()
@@ -109,10 +99,10 @@ class SimpleTodoEditor(QDialog, Ui_SimpleTodoEditor):
 
     def accept(self):
         if self.txtSubject.text().strip() == "":
-            QMessageBox.information(self, self.windowTitle(), self.trUtf8("标题不能为空。"))
+            QMessageBox.information(self, self.windowTitle(), self.tr("标题不能为空。"))
             return
         if not (self.rdoFinished.isChecked() or self.rdoProcessing.isChecked() or self.rdoUnfinished.isChecked()):
-            QMessageBox.information(self, self.windowTitle(), self.trUtf8("请选择完成度。"))
+            QMessageBox.information(self, self.windowTitle(), self.tr("请选择完成度。"))
             return
         QDialog.accept(self)
 

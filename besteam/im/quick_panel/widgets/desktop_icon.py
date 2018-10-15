@@ -1,19 +1,11 @@
-# -*- coding:utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import division
-from __future__ import absolute_import
-try:
-    str = unicode
-except NameError:
-    pass
-
-import os, logging, uuid
-from PyQt4.QtCore import QAbstractListModel, QFileInfo, QModelIndex, QProcess, \
-        QSize, QUrl, Qt
-from PyQt4.QtGui import QFileIconProvider, QAbstractItemView, QAction, \
-        QDesktopServices, QDialog, QFrame, QIcon, QImage, QListView, QMenu, \
-        QMessageBox, QPixmap, QFileDialog, QCursor, QHBoxLayout
+import os
+import logging
+import uuid
+from PyQt5.QtCore import QAbstractListModel, QFileInfo, QModelIndex, QProcess, QSize, QUrl, Qt, \
+        QStandardPaths
+from PyQt5.QtGui import QDesktopServices, QIcon, QImage, QPixmap, QCursor
+from PyQt5.QtWidgets import QAbstractItemView, QListView, QMenu, QHBoxLayout, QFileDialog, \
+        QMessageBox, QDialog, QFrame, QFileIconProvider, QAction
 from besteam.utils.sql import Table, Database
 from .Ui_shortcut import Ui_ShortcutDialog
 from .Ui_bookmark import Ui_BookmarkDialog
@@ -54,19 +46,19 @@ class DesktopIconWidget(QFrame):
         self.makeConnections()
 
     def createActions(self):
-        self.actionCreateComputer = QAction(self.trUtf8("我的电脑(&C)"), self)
-        self.actionCreateDocuments = QAction(self.trUtf8("我的文档(&D)"), self)
-        self.actionCreateMusic = QAction(self.trUtf8("我的音乐(&M)"), self)
-        self.actionCreatePictures = QAction(self.trUtf8("我的图片(&P)"), self)
-        self.actionCreateShortcut = QAction(self.trUtf8("创建快捷方式(&C)"), self)
+        self.actionCreateComputer = QAction(self.tr("我的电脑(&C)"), self)
+        self.actionCreateDocuments = QAction(self.tr("我的文档(&D)"), self)
+        self.actionCreateMusic = QAction(self.tr("我的音乐(&M)"), self)
+        self.actionCreatePictures = QAction(self.tr("我的图片(&P)"), self)
+        self.actionCreateShortcut = QAction(self.tr("创建快捷方式(&C)"), self)
         self.actionCreateShortcut.setIcon(QIcon(":/images/new.png"))
-        self.actionCreateBookmark = QAction(self.trUtf8("创建网络链接(&B)"), self)
+        self.actionCreateBookmark = QAction(self.tr("创建网络链接(&B)"), self)
         self.actionCreateBookmark.setIcon(QIcon(":/images/insert-link.png"))
-        self.actionRemoveShortcut = QAction(self.trUtf8("删除快捷方式(&R)"), self)
+        self.actionRemoveShortcut = QAction(self.tr("删除快捷方式(&R)"), self)
         self.actionRemoveShortcut.setIcon(QIcon(":/images/delete.png"))
-        self.actionRenameShortcut = QAction(self.trUtf8("重命名(&N)"), self)
+        self.actionRenameShortcut = QAction(self.tr("重命名(&N)"), self)
         self.actionRenameShortcut.setIcon(QIcon(":/images/edit-rename.png"))
-        self.actionEditShortcut = QAction(self.trUtf8("编辑快捷方式(&E)"), self)
+        self.actionEditShortcut = QAction(self.tr("编辑快捷方式(&E)"), self)
         self.actionEditShortcut.setIcon(QIcon(":/images/edit.png"))
 
     def makeConnections(self):
@@ -89,7 +81,7 @@ class DesktopIconWidget(QFrame):
         menu = QMenu()
         menu.addAction(self.actionCreateShortcut)
         menu.addAction(self.actionCreateBookmark)
-        menu2 = menu.addMenu(self.trUtf8("创建特殊快捷方式(&S)"))
+        menu2 = menu.addMenu(self.tr("创建特殊快捷方式(&S)"))
         if os.name == "nt":
             menu2.addAction(self.actionCreateComputer)
         menu2.addAction(self.actionCreateDocuments)
@@ -129,7 +121,7 @@ class DesktopIconWidget(QFrame):
     def createComputerShortcut(self):
         shortcut = {
                 "id": str(uuid.uuid4()),
-                "name": self.trUtf8("我的电脑"),
+                "name": self.tr("我的电脑"),
                 "path": COMPUTER_PATH,
                 "icon": "",
                 "dir": "",
@@ -140,7 +132,7 @@ class DesktopIconWidget(QFrame):
     def createDocumentsShortcut(self):
         shortcut = {
                 "id": str(uuid.uuid4()),
-                "name": self.trUtf8("我的文档"),
+                "name": self.tr("我的文档"),
                 "path": DOCUMENTS_PATH,
                 "icon": "",
                 "dir": "",
@@ -151,7 +143,7 @@ class DesktopIconWidget(QFrame):
     def createPicturesShortcut(self):
         shortcut = {
                 "id": str(uuid.uuid4()),
-                "name": self.trUtf8("图片收藏"),
+                "name": self.tr("图片收藏"),
                 "path": PICTURES_PATH,
                 "icon": "",
                 "dir": "",
@@ -162,7 +154,7 @@ class DesktopIconWidget(QFrame):
     def createMusicShortcut(self):
         shortcut = {
                 "id": str(uuid.uuid4()),
-                "name": self.trUtf8("我的音乐"),
+                "name": self.tr("我的音乐"),
                 "path": MUSIC_PATH,
                 "icon": "",
                 "dir": "",
@@ -185,7 +177,7 @@ class DesktopIconWidget(QFrame):
         if not url.isValid():
             return
         if url.scheme() == "special":
-            QMessageBox.information(self, self.trUtf8("编辑快捷方式"), self.trUtf8("不能编辑特殊图标。"))
+            QMessageBox.information(self, self.tr("编辑快捷方式"), self.tr("不能编辑特殊图标。"))
             return
         elif url.scheme() == "file":
             d = ShortcutDialog(self)
@@ -201,8 +193,8 @@ class DesktopIconWidget(QFrame):
         if not index.isValid():
             return
         if not self.quickDesktopModel.runShortcut(index):
-            QMessageBox.information(self, self.trUtf8("快捷面板"), \
-                    self.trUtf8("不能运行快捷方式。请检查文件是否存在或者程序是否正确。"))
+            QMessageBox.information(self, self.tr("快捷面板"), \
+                    self.tr("不能运行快捷方式。请检查文件是否存在或者程序是否正确。"))
         else:
             self.window().close()
 
@@ -215,19 +207,19 @@ def getShortcutIcon(shortcut):
     if shortcut["path"] == COMPUTER_PATH:
         return QIcon(":/images/user-home.png")
     elif shortcut["path"] == DOCUMENTS_PATH:
-        documentsIcon = iconProvider.icon(QFileInfo(QDesktopServices.storageLocation(QDesktopServices.DocumentsLocation)))
+        documentsIcon = iconProvider.icon(QFileInfo(QStandardPaths.writableLocation(QStandardPaths.DocumentsLocation)))
         if documentsIcon.isNull():
             return QIcon(":/images/folder-documents.png")
         else:
             return documentsIcon
     elif shortcut["path"] == MUSIC_PATH:
-        musicIcon = iconProvider.icon(QFileInfo(QDesktopServices.storageLocation(QDesktopServices.MusicLocation)))
+        musicIcon = iconProvider.icon(QFileInfo(QStandardPaths.writableLocation(QStandardPaths.MusicLocation)))
         if musicIcon.isNull():
             return QIcon(":/images/folder-sound.png")
         else:
             return musicIcon
     elif shortcut["path"] == PICTURES_PATH:
-        picturesIcon = iconProvider.icon(QFileInfo(QDesktopServices.storageLocation(QDesktopServices.PicturesLocation)))
+        picturesIcon = iconProvider.icon(QFileInfo(QStandardPaths.writableLocation(QStandardPaths.PicturesLocation)))
         if picturesIcon.isNull():
             return QIcon(":/images/folder-image.png")
         else:
@@ -310,11 +302,11 @@ class QuickDesktopModel(QAbstractListModel):
                 else:
                     path = "/"
             elif shortcut["path"] == DOCUMENTS_PATH:
-                path = QDesktopServices.storageLocation(QDesktopServices.DocumentsLocation)
+                path = QStandardPaths.writableLocation(QStandardPaths.DocumentsLocation)
             elif shortcut["path"] == MUSIC_PATH:
-                path = QDesktopServices.storageLocation(QDesktopServices.MusicLocation)
+                path = QStandardPaths.writableLocation(QStandardPaths.MusicLocation)
             elif shortcut["path"] == PICTURES_PATH:
-                path = QDesktopServices.storageLocation(QDesktopServices.PicturesLocation)
+                path = QStandardPaths.writableLocation(QStandardPaths.PicturesLocation)
             else:
                 return False
             if os.name == "nt": #针对windows进行优化
@@ -376,8 +368,8 @@ class ShortcutDialog(QDialog, Ui_ShortcutDialog):
 
     def create(self):
         self.mode = "create"
-        self.setWindowTitle(self.trUtf8("创建快捷方式"))
-        self.btnOkay.setText(self.trUtf8("创建(&O)"))
+        self.setWindowTitle(self.tr("创建快捷方式"))
+        self.btnOkay.setText(self.tr("创建(&O)"))
         self.iconPath = ""
         self.shortcutIcon = QIcon(":/images/unknown.png")
         self.btnFace.setIcon(self.shortcutIcon)
@@ -393,7 +385,7 @@ class ShortcutDialog(QDialog, Ui_ShortcutDialog):
 
     def edit(self, shortcut):
         self.mode = "edit"
-        self.setWindowTitle(self.trUtf8("编辑快捷方式"))
+        self.setWindowTitle(self.tr("编辑快捷方式"))
         icon = getShortcutIcon(shortcut)
         self.btnFace.setIcon(icon)
         self.shortcutIcon = icon
@@ -410,19 +402,19 @@ class ShortcutDialog(QDialog, Ui_ShortcutDialog):
     def accept(self):
         if self.txtName.text().strip() == "":
             QMessageBox.information(self, self.windowTitle(),
-                    self.trUtf8("请填写快捷方式的名称。"))
+                    self.tr("请填写快捷方式的名称。"))
             self.txtName.setFocus(Qt.OtherFocusReason)
             return
         path = self.txtPath.text().strip()
         if path == "":
             QMessageBox.information(self, self.windowTitle(),
-                    self.trUtf8("请填写目标文件/程序。"))
+                    self.tr("请填写目标文件/程序。"))
             self.txtPath.setFocus(Qt.OtherFocusReason)
             self.txtPath.selectAll()
             return
         if not os.path.exists(path):
             QMessageBox.information(self, self.windowTitle(),
-                    self.trUtf8("目标文件/程序不存在。"))
+                    self.tr("目标文件/程序不存在。"))
             self.txtPath.setFocus(Qt.OtherFocusReason)
             self.txtPath.selectAll()
             return
@@ -430,33 +422,33 @@ class ShortcutDialog(QDialog, Ui_ShortcutDialog):
         if openwith != "":
             if not os.path.exists(openwith):
                 QMessageBox.information(self, self.windowTitle(),
-                        self.trUtf8("编辑程序不存在。请重新选择。该选项是选填项，并不一定要填写。"))
+                        self.tr("编辑程序不存在。请重新选择。该选项是选填项，并不一定要填写。"))
                 self.txtOpenwith.setFocus(Qt.OtherFocusReason)
                 self.txtOpenwith.selectAll()
                 return
             fi = QFileInfo(openwith)
             if not fi.isExecutable():
                 QMessageBox.information(self, self.windowTitle(),
-                        self.trUtf8("编辑程序必须是一个可执行文件。请重新选择。该选项是选填项，并不一定要填写。"))
+                        self.tr("编辑程序必须是一个可执行文件。请重新选择。该选项是选填项，并不一定要填写。"))
                 self.txtOpenwith.setFocus(Qt.OtherFocusReason)
                 self.txtOpenwith.selectAll()
                 return
         dir = self.txtDir.text().strip()
         if dir == "":
             QMessageBox.information(self, self.windowTitle(),
-                    self.trUtf8("请填写运行目录。可以使用“默认运行目录”按钮恢复默认的运行目录。"))
+                    self.tr("请填写运行目录。可以使用“默认运行目录”按钮恢复默认的运行目录。"))
             self.txtDir.setFocus(Qt.OtherFocusReason)
             self.txtDir.selectAll()
             return
         if not os.path.exists(dir):
             QMessageBox.information(self, self.windowTitle(),
-                    self.trUtf8("运行目录不存在。请重新选择。可以使用“默认运行目录”按钮恢复默认的运行目录。"))
+                    self.tr("运行目录不存在。请重新选择。可以使用“默认运行目录”按钮恢复默认的运行目录。"))
             self.txtDir.setFocus(Qt.OtherFocusReason)
             self.txtDir.selectAll()
             return
         if not os.path.isdir(dir):
             QMessageBox.information(self, self.windowTitle(),
-                    self.trUtf8("运行目录必须是一个目录，而非文件。请重新选择。可以使用“默认运行目录”按钮恢复默认的运行目录。"))
+                    self.tr("运行目录必须是一个目录，而非文件。请重新选择。可以使用“默认运行目录”按钮恢复默认的运行目录。"))
             self.txtDir.setFocus(Qt.OtherFocusReason)
             self.txtDir.selectAll()
             return
@@ -464,8 +456,8 @@ class ShortcutDialog(QDialog, Ui_ShortcutDialog):
 
     def changeFileIcon(self):
         "用户点击了更换图标按钮。"
-        filename = QFileDialog.getOpenFileName(self, self.windowTitle())
-        if filename == "":
+        filename, selectedFilter = QFileDialog.getOpenFileName(self, self.windowTitle())
+        if not filename:
             return
         image = QImage(filename)
         if not image.isNull():
@@ -474,8 +466,8 @@ class ShortcutDialog(QDialog, Ui_ShortcutDialog):
             ip = QFileIconProvider()
             shortcutIcon = ip.icon(QFileInfo(filename))
             if shortcutIcon.isNull():
-                QMessageBox.information(self, self.trUtf8("更换图标"),
-                        self.trUtf8("您选择的文件不包含任何可以使用的图标。"))
+                QMessageBox.information(self, self.tr("更换图标"),
+                        self.tr("您选择的文件不包含任何可以使用的图标。"))
                 return
             self.shortcutIcon = shortcutIcon
         self.iconPath = filename
@@ -504,14 +496,14 @@ class ShortcutDialog(QDialog, Ui_ShortcutDialog):
     def browsePath(self):
         """用户点击了浏览路径的按钮。如果成功设置了路径，就返回True，如果用户取消了操作或者出错，就返回False
         返回的用途参见showEvent()"""
-        filename = QFileDialog.getOpenFileName(self, self.windowTitle())
-        if filename == "":
+        filename, selectedFilter = QFileDialog.getOpenFileName(self, self.windowTitle())
+        if not filename:
             return False
         fi = QFileInfo(filename)
         if fi.isSymLink():
             filename = fi.symLinkTarget()
             if not os.path.exists(filename):
-                QMessageBox.information(self, self.windowTitle(), self.trUtf8("快捷方式所指向的程序不正确。"))
+                QMessageBox.information(self, self.windowTitle(), self.tr("快捷方式所指向的程序不正确。"))
                 return False
         fi = QFileInfo(filename)
         self.txtName.setText(fi.baseName())
@@ -531,20 +523,20 @@ class ShortcutDialog(QDialog, Ui_ShortcutDialog):
         self.btnFace.setIcon(self.shortcutIcon)
 
     def browseOpenwith(self):
-        filename = QFileDialog.getOpenFileName(self, self.windowTitle())
-        if filename == "":
+        filename, selectedFilter = QFileDialog.getOpenFileName(self, self.windowTitle())
+        if not filename:
             return
         fi = QFileInfo(filename)
         if fi.isSymLink():
             filename = fi.symLinkTarget()
             if not os.path.exists(filename):
                 QMessageBox.information(self, self.windowTitle(),
-                        self.trUtf8("快捷方式所指向的程序不正确。"))
+                        self.tr("快捷方式所指向的程序不正确。"))
                 return
         fi = QFileInfo(filename)
         if not fi.isExecutable():
             QMessageBox.information(self, self.windowTitle(),
-                    self.trUtf8("编辑程序必须是一个可执行文件。请重新选择。该选项是选填项，并不一定要填写。"))
+                    self.tr("编辑程序必须是一个可执行文件。请重新选择。该选项是选填项，并不一定要填写。"))
         self.txtOpenwith.setText(fi.absoluteFilePath())
 
     def getResult(self):
@@ -588,16 +580,16 @@ class BookmarkDialog(QDialog, Ui_BookmarkDialog):
 
     def accept(self):
         if self.txtName.text().strip() == "":
-            QMessageBox.information(self, self.windowTitle(), self.trUtf8("请填写网络链接的名称。"))
+            QMessageBox.information(self, self.windowTitle(), self.tr("请填写网络链接的名称。"))
             self.txtName.setFocus(Qt.OtherFocusReason)
             return
         if self.txtLink.text().strip() == "":
-            QMessageBox.information(self, self.windowTitle(), self.trUtf8("请填写网络链接的地址。"))
+            QMessageBox.information(self, self.windowTitle(), self.tr("请填写网络链接的地址。"))
             self.txtLink.setFocus(Qt.OtherFocusReason)
             return
         url = QUrl.fromUserInput(self.txtLink.text().strip())
         if not url.isValid():
-            QMessageBox.information(self, self.windowTitle(), self.trUtf8("您填写的似乎不是正确的网络链接地址。"))
+            QMessageBox.information(self, self.windowTitle(), self.tr("您填写的似乎不是正确的网络链接地址。"))
             self.txtLink.setFocus(Qt.OtherFocusReason)
             self.txtLink.selectAll()
             return
@@ -620,7 +612,7 @@ class ShortcutDatabase(Database):
             if os.name == "nt":
                 self.insertShortcut({
                         "id": str(uuid.uuid4()),
-                        "name": self.trUtf8("我的电脑"),
+                        "name": self.tr("我的电脑"),
                         "path": COMPUTER_PATH,
                         "openwith": "",
                         "icon": "",
@@ -628,7 +620,7 @@ class ShortcutDatabase(Database):
                 })
             self.insertShortcut({
                     "id": str(uuid.uuid4()),
-                    "name": self.trUtf8("我的文档"),
+                    "name": self.tr("我的文档"),
                     "path": DOCUMENTS_PATH,
                     "openwith": "",
                     "icon": "",
@@ -636,7 +628,7 @@ class ShortcutDatabase(Database):
             })
             self.insertShortcut({
                     "id": str(uuid.uuid4()),
-                    "name": self.trUtf8("我的音乐"),
+                    "name": self.tr("我的音乐"),
                     "path": MUSIC_PATH,
                     "openwith": "",
                     "icon": "",
@@ -644,7 +636,7 @@ class ShortcutDatabase(Database):
             })
             self.insertShortcut({
                     "id": str(uuid.uuid4()),
-                    "name": self.trUtf8("图片收藏"),
+                    "name": self.tr("图片收藏"),
                     "path": PICTURES_PATH,
                     "openwith": "",
                     "icon": "",

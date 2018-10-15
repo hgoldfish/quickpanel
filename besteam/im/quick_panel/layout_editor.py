@@ -1,17 +1,8 @@
-# -*- coding:utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import division
-from __future__ import absolute_import
-try:
-    str = unicode
-except NameError:
-    pass
-
-import copy, functools
-from PyQt4.QtCore import QAbstractListModel, QModelIndex, QPoint, QRect, Qt, pyqtSignal
-from PyQt4.QtGui import QBrush, QColor, QDialog, QFrame, QIcon, QMenu, QPainter, \
-        QPen, QSizePolicy, QWidget
+import copy
+import functools
+from PyQt5.QtCore import QAbstractListModel, QModelIndex, QPoint, QRect, Qt, pyqtSignal
+from PyQt5.QtGui import QBrush, QColor, QIcon, QPainter, QPen
+from PyQt5.QtWidgets import QDialog, QFrame, QMenu, QSizePolicy, QWidget
 from .Ui_selectwidgets import Ui_SelectWidgetsDialog
 
 __all__ = ["LayoutEditor"]
@@ -261,7 +252,7 @@ class Widget(QWidget):
                 self.originalTopLeft += QPoint( - 3, -3)
         elif event.button() == Qt.RightButton:
             menu = QMenu()
-            actionDelete = menu.addAction(QIcon(":/images/remove.png"), self.trUtf8("删除(&R)"))
+            actionDelete = menu.addAction(QIcon(":/images/remove.png"), self.tr("删除(&R)"))
             try:
                 result = getattr(menu, "exec_")(event.globalPos())
             except AttributeError:
@@ -341,6 +332,7 @@ class WidgetsModel(QAbstractListModel):
         self.widgets = []
 
     def setWidgets(self, widgets):
+        self.beginResetModel()
         self.widgets = []
         for widget in widgets:
             w = {}
@@ -349,7 +341,7 @@ class WidgetsModel(QAbstractListModel):
             w["description"] = widget["description"]
             w["enabled"] = widget["enabled"]
             self.widgets.append(w)
-        self.reset()
+        self.endResetModel()
 
     def rowCount(self, parent):
         if parent.isValid():

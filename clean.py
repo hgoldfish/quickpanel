@@ -1,19 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import division
-from __future__ import absolute_import
-try:
-    str = unicode
-except NameError:
-    pass
-
 import os
 
-currentDir = os.path.dirname(os.path.abspath(__file__))
-
-for root, dirs, filenames in os.walk(str(currentDir)):
+current_dir = os.path.dirname(os.path.abspath(__file__))
+os.unlink(os.path.join(current_dir, "quickpanel_rc.py"))
+for root, dirs, filenames in os.walk(current_dir):
     for filename in filenames:
         path = os.path.join(root, filename)
         if filename.endswith((".pyc", ".pyo")):

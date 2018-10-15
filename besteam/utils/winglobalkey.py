@@ -1,13 +1,3 @@
-# -*- coding:utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import division
-from __future__ import absolute_import
-try:
-    str = unicode
-except NameError:
-    pass
-
 import weakref
 from ctypes import windll, Structure, WINFUNCTYPE, POINTER, \
         sizeof, cast, byref
@@ -17,8 +7,8 @@ from ctypes.wintypes import HWND, UINT, WPARAM, LPARAM, \
 LRESULT = LPARAM
 HCURSOR = HICON
 NULL = 0
-from PyQt4.QtCore import Qt, QObject, pyqtSignal
-from PyQt4.QtGui import QKeySequence
+from PyQt5.QtCore import Qt, QObject, pyqtSignal
+from PyQt5.QtGui import QKeySequence
 
 WM_HOTKEY = 0x0312
 WM_DESTROY = 0x0002

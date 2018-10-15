@@ -1,54 +1,18 @@
-# -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import division
-from __future__ import absolute_import
+import os
+import sqlite3
+import threading
+import pickle
+import traceback
+import types
+import sys
+import warnings
+import logging
+import functools
 try:
-    str = unicode
-except NameError:
-    pass
-
-"""
-一个ORM框架，主要面向sqlite3，主要特点是简洁易用，主要是实现简单的SUID操作，
-定义好表格字段，在创建数据库的时候自动创建表格，支持简单的事务处理。
-该模块只接收str类型的字符串，在dolphin内部，不使用QString类型的字符串\
-对于pickle类型的数据，应该使用blob类型
-Dolphin的编程规范第一条，除非确定为ASCII编码,否则都应使用unicode字符串
-Database是线程安全的。但是DataObject则不是。
-
-class User(Table):
-    pkName="id" #默认是id，也可以不写
-    #要在哪个字段上创建索引，这里一共创建了两个索引:
-    #create index username_idx on user (username);
-    #create index age_sex_idx on user (age, sex);
-    indexes=("username", ("age", "sex"))
-    columns={"id":"text",
-            "sex":"text",
-            "username":"text",
-            "age":"number",
-            "created_date":"QDateTime",
-            }
-
-class Taskbook(Database):
-    tables=(User, )
-
-db=Database("~/taskbook.dat")
-db.selectUser("where username=? and age>? order by age", username, age)
-db.updateUser(user, "where username=? and age>?", username, age)
-db.deleteUser("where username=? and age>?", username, age)
-db.insertUser(user)
-conn=db.conn()
-cursor=conn.cursor()
-cursor.execute()
-"""
-
-import os, sqlite3, threading, pickle, traceback, types, sys, \
-        warnings, logging, functools
-try:
-    from PyQt4.QtCore import QDate, QDateTime, QObject
-    usingPyQt4 = True
+    from PyQt5.QtCore import QDate, QDateTime, QObject
+    usingPyQt5 = True
 except ImportError:
-    usingPyQt4 = False
+    usingPyQt5 = False
 
 __all__ = ["Table", "Database", "DatabaseException", "transaction", "DataObject",
     "DataObjectProxy", "createDataObject", "createDetachedDataObject"]
@@ -135,26 +99,18 @@ def adapt_bool(b):
 def convert_bool(b):
     return b == b"T"
 
-if usingPyQt4:
+if usingPyQt5:
     sqlite3.register_adapter(QDateTime, adapt_QDateTime)
     sqlite3.register_adapter(QDate, adapt_QDate)
 sqlite3.register_adapter(bool, adapt_bool)
 sqlite3.register_adapter(list, pickle_dumps)
 sqlite3.register_adapter(dict, pickle_dumps)
-if sys.version_info[0] < 3: #python 2.x的bug，不接受unicode类型的参数
-    if usingPyQt4:
-        sqlite3.register_converter(b"QDateTime", convert_QDateTime)
-        sqlite3.register_converter(b"QDate", convert_QDate)
-    sqlite3.register_converter(b"bool", convert_bool)
-    sqlite3.register_converter(b"list", pickle.loads)
-    sqlite3.register_converter(b"dict", pickle.loads)
-else:
-    if usingPyQt4:
-        sqlite3.register_converter("QDateTime", convert_QDateTime)
-        sqlite3.register_converter("QDate", convert_QDate)
-    sqlite3.register_converter("bool", convert_bool)
-    sqlite3.register_converter("list", pickle.loads)
-    sqlite3.register_converter("dict", pickle.loads)
+if usingPyQt5:
+    sqlite3.register_converter("QDateTime", convert_QDateTime)
+    sqlite3.register_converter("QDate", convert_QDate)
+sqlite3.register_converter("bool", convert_bool)
+sqlite3.register_converter("list", pickle.loads)
+sqlite3.register_converter("dict", pickle.loads)
 
 transaction_local = threading.local()
 __transaction_debug = False
@@ -358,7 +314,7 @@ class DataObjectProxy(DictProxy):
         assert isinstance(target, DataObject)
         DictProxy.setTarget(self, target)
 
-if usingPyQt4:
+if usingPyQt5:
     _QObject = QObject
 else:
     class _QObject:
@@ -368,7 +324,7 @@ else:
         def trUtf8(self, utf8Bytes):
             return utf8Bytes.decode("utf-8")
 
-#继承于QObject的主要原因是为了使用self.trUtf8()
+#继承于QObject的主要原因是为了使用self.tr()
 class Database(_QObject):
     @transaction
     def __init__(self, dbfile):
@@ -663,19 +619,7 @@ class Table:
     def getIndexes(cls):
         "返回表格定义的索引"
         return cls.indexes
-#
-#def removeListItem(l, e):
-#    "从列表中移除某个对象。与[].remove()不同的地方是e可以是一个函数，并且默认使用is运行符而不是==运算符。可以避免{}的递归比较"
-#    if callable(e):
-#        judge=e
-#    else:
-#        judge=lambda f: f is e
-#    i=0
-#    for f in l:
-#        if judge(f):
-#            l.pop(i)
-#            return
-#        i+=1
+
 
 if __name__ == "__main__":
     class Person(Table):

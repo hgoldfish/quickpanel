@@ -1,15 +1,6 @@
-# -*- coding:utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import division
-from __future__ import absolute_import
-try:
-    str = unicode
-except NameError:
-    pass
-
-from PyQt4.QtCore import QDateTime, Qt, QRectF, QPointF, QSizeF, QTimer
-from PyQt4.QtGui import QFontMetrics, QFrame, QStylePainter
+from PyQt5.QtCore import QDateTime, Qt, QRectF, QPointF, QSizeF, QTimer
+from PyQt5.QtGui import QFontMetrics
+from PyQt5.QtWidgets import QFrame, QStylePainter
 
 class CalendarWidget(QFrame):
     def __init__(self, parent = None):

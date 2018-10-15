@@ -1,15 +1,5 @@
-# -*- coding:utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import division
-from __future__ import absolute_import
-try:
-    str = unicode
-except NameError:
-    pass
-
-from PyQt4.QtCore import QRect
-from PyQt4.QtGui import QFrame, QSizePolicy
+from PyQt5.QtCore import QRect
+from PyQt5.QtWidgets import QFrame, QSizePolicy
 
 __all__ = ["Canvas"]
 

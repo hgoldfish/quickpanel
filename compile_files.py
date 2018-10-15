@@ -1,15 +1,7 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import division
-from __future__ import absolute_import
-try:
-    str = unicode
-except NameError:
-    pass
-
-import os, sys
+import os
+import sys
 
 class NotFound(Exception):
     pass
@@ -24,7 +16,7 @@ def findPyQtTools_win32():
         if not os.path.exists(tool):
             tool = os.path.join(pythondir, "Scripts", toolname)
         if not os.path.exists(tool):
-            tool = os.path.join(pythondir, "Lib\\site-packages\\PyQt4", toolname)
+            tool = os.path.join(pythondir, "Lib\\site-packages\\PyQt5", toolname)
         if not os.path.exists(tool):
             for systempath in systempaths:
                 tool = os.path.join(systempath, toolname)
@@ -34,26 +26,22 @@ def findPyQtTools_win32():
             raise NotFound()
         return tool
 
-    pyrcc = findTool("pyrcc4.exe")
-    pyrcc += " -py3"
-    pyuic = findTool("pyuic4.bat")
-    pyuic += " -w"
+    pyrcc = findTool("pyrcc5.bat")
+    pyuic = findTool("pyuic5.bat")
     return pyrcc, pyuic
 
 def findPyQtTools_linux():
-    pyrcc = "/usr/bin/pyrcc4"
+    pyrcc = "/usr/bin/pyrcc5"
     if not os.path.exists(pyrcc):
-        pyrcc = "/usr/local/bin/pyrcc4"
+        pyrcc = "/usr/local/bin/pyrcc5"
     if not os.path.exists(pyrcc):
         raise NotFound()
-    pyrcc += " -py3"
 
-    pyuic = "/usr/bin/pyuic4"
+    pyuic = "/usr/bin/pyuic5"
     if not os.path.exists(pyuic):
-        pyuic = "/usr/local/bin/pyuic4"
+        pyuic = "/usr/local/bin/pyuic5"
     if not os.path.exists(pyuic):
         raise NotFound()
-    pyuic += " -w"
 
     return pyrcc, pyuic
 

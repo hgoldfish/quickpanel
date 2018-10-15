@@ -1,13 +1,3 @@
-# -*- coding:utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import division
-from __future__ import absolute_import
-try:
-    str = unicode
-except NameError:
-    pass
-
 import sys
 
 
@@ -17,10 +7,10 @@ if sys.platform == "win32":
     from .winglobalkey import GlobalKey
 else:
     try:
-        from PyKDE4.kdeui import KAction; KAction
+        from PyKDE5.kdeui import KAction; KAction
         from .kdeglobalkey import GlobalKey
     except ImportError:
-        from PyQt4.QtCore import pyqtSignal, QObject
+        from PyQt5.QtCore import pyqtSignal, QObject
 
         class GlobalKey(QObject):
             catched = pyqtSignal(int)
