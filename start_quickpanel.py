@@ -5,7 +5,7 @@ import os
 from PyQt5.QtCore import QObject, pyqtSignal, QStandardPaths
 from PyQt5.QtGui import QFont,  QIcon, QKeySequence
 from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QPushButton, QLabel, QDialog, QSizePolicy, \
-        QDialogButtonBox, QVBoxLayout, QHBoxLayout, QAction,  QMessageBox
+        QDialogButtonBox, QVBoxLayout, QHBoxLayout, QAction, QStyleFactory
 import quickpanel_rc; quickpanel_rc
 from besteam.utils.settings import Settings, _Settings
 from besteam.utils.globalkey import GlobalKey
@@ -13,6 +13,7 @@ from besteam.im.quick_panel import QuickPanel
 from tetrix import TetrixWindow
 
 logger = logging.getLogger("quickpanel")
+
 
 class SetKeyWidget(QPushButton):
     editingFinished = pyqtSignal()
@@ -28,6 +29,7 @@ class SetKeyWidget(QPushButton):
             self.editingFinished.emit()
         else:
             QPushButton.keyPressEvent(self, event)
+
 
 class ConfigureDialog(QDialog):
     def __init__(self):
@@ -81,18 +83,12 @@ class Platform(QObject):
         logger.info("QuickPanel is launched.")
         self.quickPanel.addQuickAccessShortcut(self.tr("Tetrix"), \
                 QIcon(":/images/tetrix.png"), self.startTetrix)
-        self.quickPanel.addQuickAccessShortcut(self.tr("Hello"), \
-                QIcon(":/images/hello.png"), self.sayHello)
 
     def startTetrix(self):
         if getattr(self, "tetrixWindow", None) is None:
             self.tetrixWindow = TetrixWindow()
         self.tetrixWindow.show()
         self.tetrixWindow.activateWindow()
-
-    def sayHello(self):
-        QMessageBox.information(None, self.tr("Say Hello."), \
-                self.tr("Hello, world!"))
 
     def loadSettings(self):
         settings = self.getSettings()
@@ -132,6 +128,7 @@ class Platform(QObject):
     def getSettings(self):
         return Settings(self._settings)
 
+
 def main():
     app = QApplication(sys.argv)
     if sys.platform == "win32":
@@ -141,13 +138,11 @@ def main():
     app.setApplicationName("QuickPanel")
     app.setQuitOnLastWindowClosed(False)
     app.setWindowIcon(QIcon(":/images/angelfish.png"))
-    #app.setStyle(QStyleFactory.create("qtcurve"))
+    app.setStyle(QStyleFactory.create("fusion"))
     platform = Platform()
     platform.start()
-    try:
-        getattr(app, "exec")()
-    except AttributeError:
-        getattr(app, "exec_")()
+    return app.exec()
+
 
 if __name__ == "__main__":
     logging.basicConfig(level = logging.DEBUG)

@@ -1,15 +1,18 @@
 import sys
-
+import logging
 
 __all__ = ["GlobalKey"]
+
+logger = logging.getLogger(__name__)
+
 
 if sys.platform == "win32":
     from .winglobalkey import GlobalKey
 else:
     try:
-        from PyKDE5.kdeui import KAction; KAction
-        from .kdeglobalkey import GlobalKey
-    except ImportError:
+        from .x11globalkey import GlobalKey
+    except (ImportError, OSError):
+        logging.warning("X11 global key is not available, using fallback implementation")
         from PyQt5.QtCore import pyqtSignal, QObject
 
         class GlobalKey(QObject):

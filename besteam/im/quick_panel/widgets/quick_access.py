@@ -21,4 +21,8 @@ class QuickAccessWidget(QFrame):
         self.listView.setGridSize(QSize(gridSize, gridSize))
         self.listView.setViewMode(QListView.IconMode)
 
-        self.listView.activated.connect(self.listView.model().runShortcut)
+        self.listView.activated.connect(self.runQuickAccessShortcut)
+
+    def runQuickAccessShortcut(self, index):
+        self.listView.model().runShortcut(index)
+        self.window().close()

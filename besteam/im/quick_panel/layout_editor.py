@@ -1,6 +1,6 @@
 import copy
 import functools
-from PyQt5.QtCore import QAbstractListModel, QModelIndex, QPoint, QRect, Qt, pyqtSignal
+from PyQt5.QtCore import QAbstractListModel, QModelIndex, QPoint, QRect, Qt, QTimer, pyqtSignal
 from PyQt5.QtGui import QBrush, QColor, QIcon, QPainter, QPen
 from PyQt5.QtWidgets import QDialog, QFrame, QMenu, QSizePolicy, QWidget
 from .Ui_selectwidgets import Ui_SelectWidgetsDialog
@@ -258,7 +258,10 @@ class Widget(QWidget):
             except AttributeError:
                 result = getattr(menu, "exec")(event.globalPos())
             if result is actionDelete:
-                self.deleteMe.emit()
+                # 不能在事件处理函数中直接销毁自身（deleteMe -> deleteWidget -> setParent(None)，
+                # 最后一次 Python 引用释放时 C++ 对象会同步析构，而事件分发栈仍持有 this，导致 SIGSEGV）。
+                # 延迟到事件循环，等 mousePressEvent 返回后再发出删除信号。
+                QTimer.singleShot(0, self.deleteMe.emit)
 
     def mouseReleaseEvent(self, event):
         self.moving = False

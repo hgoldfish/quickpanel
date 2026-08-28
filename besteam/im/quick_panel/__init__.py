@@ -2,11 +2,11 @@ import os
 import functools
 import logging
 import ctypes
-from PyQt5.QtCore import QAbstractListModel, QModelIndex, QRect, QTimer, Qt, QStandardPaths
+from PyQt5.QtCore import QAbstractListModel, QModelIndex, QRect, QSize, QTimer, Qt, QStandardPaths
 from PyQt5.QtGui import  QBrush, QColor, QImage, QPainter, QPen, QIcon, QDesktopServices
 from PyQt5.QtWidgets import QApplication, QDialog, QMessageBox,  \
         QSizePolicy, QToolBar, QWidget, QAction, QHBoxLayout, \
-        QVBoxLayout, QLabel, QFileDialog
+        QVBoxLayout, QFileDialog
 
 from .layout_editor import LayoutEditor
 from .canvas import Canvas
@@ -171,6 +171,7 @@ class QuickPanel(QWidget, WidgetManager):
         self.setWindowModality(Qt.ApplicationModal)
         self.platform = platform
         self.db = QuickPanelDatabase(platform.databaseFile)
+        self.backgroundDir = None  # 上一次选择背景图片的目录（内存记录）
         self.createActions()
         self.createControls()
         self.loadSettings()
@@ -220,23 +221,25 @@ class QuickPanel(QWidget, WidgetManager):
         self.toolBarMain.addAction(self.actionChangeLayout)
         self.toolBarMain.addAction(self.actionClose)
         self.toolBarMain.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
-        self.toolBarMain.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        self.toolBarMain.setToolButtonStyle(Qt.ToolButtonIconOnly)
+        self.toolBarMain.setIconSize(QSize(16, 16))
+        self.toolBarMain.setFixedHeight(28)
         self.toolBarLayout = QToolBar(self)
         self.toolBarLayout.addAction(self.actionSelectWidgets)
         self.toolBarLayout.addAction(self.actionResetDefaultLayout)
         self.toolBarLayout.addAction(self.actionChangeLayout)
         self.toolBarLayout.addAction(self.actionClose)
         self.toolBarLayout.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
-        self.toolBarLayout.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        self.toolBarLayout.setToolButtonStyle(Qt.ToolButtonIconOnly)
+        self.toolBarLayout.setIconSize(QSize(16, 16))
+        self.toolBarLayout.setFixedHeight(28)
 
         self.canvas = Canvas(self)
         self.layoutEditor = LayoutEditor(self)
 
-        self.lblTitle = QLabel(self)
-        self.lblTitle.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
         self.setLayout(QVBoxLayout())
         self.layoutTop = QHBoxLayout()
-        self.layoutTop.addWidget(self.lblTitle)
+        self.layoutTop.addStretch()
         self.layoutTop.addWidget(self.toolBarMain)
         self.layoutTop.addWidget(self.toolBarLayout)
         self.toolBarLayout.hide()
@@ -283,17 +286,6 @@ class QuickPanel(QWidget, WidgetManager):
             self.close()
 
     def showEvent(self, event):
-        settings = self.platform.getSettings()
-        key = settings.value("globalkey", "Alt+`")
-        if key is not None:
-            if os.name == "nt": #在Windows系统下，Meta键习惯叫Win键
-                key = key.replace("Meta", "Win")
-            title = self.tr("提示：在任何位置按<b>{0}</b>打开快捷面板。").format(key)
-            self.lblTitle.setText('<span style=" font-size:14pt;font-style:italic;">{0}</span>'.format(title))
-        else:
-            title = self.tr("快捷面板")
-            self.lblTitle.setText('<span style=" font-size:14pt;font-style:italic;">{0}</span>'.format(title))
-
         #如果有时候运行全屏程序，快捷面板的位置就会发生改变
         self._makeBackground(self._background_image)
         moveToCenter(self)
@@ -366,23 +358,19 @@ class QuickPanel(QWidget, WidgetManager):
             self.leaveLayoutEditor()
 
     def changeBackground(self):
+        start_dir = self.backgroundDir or \
+            QStandardPaths.writableLocation(QStandardPaths.PicturesLocation)
         filename, selectedFilter = QFileDialog.getOpenFileName(self, self.tr("Change Background"), \
-            QStandardPaths.writableLocation(QStandardPaths.PicturesLocation), \
+            start_dir, \
             self.tr("Image Files (*.png *.gif *.jpg *.jpeg *.bmp *.mng *ico)"))
         if not filename:
             return
+        self.backgroundDir = os.path.dirname(filename)
         image = QImage(filename)
         if image.isNull():
             QMessageBox.information(self, self.tr("Change Background"), \
                     self.tr("不能读取图像文件，请检查文件格式是否正确，或者图片是否已经损坏。"))
             return
-        if image.width() < 800 or image.height() < 600:
-            answer = QMessageBox.information(self, self.tr("Change Background"), \
-                    self.tr("不建议设置小于800x600的图片作为背景图案。如果继续，可能会使快捷面板显示错乱。是否继续？"),
-                    QMessageBox.Yes | QMessageBox.No,
-                    QMessageBox.No)
-            if answer == QMessageBox.No:
-                return
         self._makeBackground(image)
         moveToCenter(self)
         self.canvas.positWidgets()
