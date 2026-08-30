@@ -82,20 +82,14 @@ class SimpleTodoEditor(QDialog, Ui_SimpleTodoEditor):
             self.rdoFinished.setChecked(True)
         else:
             self.rdoProcessing.setChecked(True)
-        try:
-            return getattr(self, "exec")()
-        except AttributeError:
-            return getattr(self, "exec_")()
+        return self.exec()
 
     def create(self):
         self.setWindowTitle(self.tr("创建待办事项"))
         btnSave = self.buttonBox.button(QDialogButtonBox.Save)
         btnSave.setText(self.tr("创建(&C)"))
         self.rdoUnfinished.setChecked(True)
-        try:
-            return getattr(self, "exec")()
-        except AttributeError:
-            return getattr(self, "exec_")()
+        return self.exec()
 
     def accept(self):
         if self.txtSubject.text().strip() == "":

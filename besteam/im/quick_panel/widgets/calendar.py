@@ -568,20 +568,21 @@ class CalendarWidget(QFrame):
 
     # ---- 番茄钟交互 ----
     def mousePressEvent(self, event):
-        if not self._pomodoro_rect().contains(event.pos()):
+        if not self._pomodoro_rect().contains(event.localPos()):
             QFrame.mousePressEvent(self, event)
             return
         if event.button() == Qt.LeftButton:
             self.pomodoro.toggle()
             self.update()
         elif event.button() == Qt.RightButton:
-            self._show_pomodoro_menu(event.pos())
+            self._show_pomodoro_menu(event.localPos().toPoint())
 
     def _show_pomodoro_menu(self, pos):
         menu = QMenu(self)
         duration_menu = menu.addMenu(self.tr("专注时长"))
         for minutes in Pomodoro.FOCUS_OPTIONS:
-            action = duration_menu.addAction(self.tr("%1 分钟").arg(minutes))
+            action = duration_menu.addAction(
+                self.tr("%1 分钟").replace("%1", str(minutes)))
             action.setCheckable(True)
             action.setChecked(minutes == self.pomodoro.focus_minutes)
             action.triggered.connect(
@@ -589,7 +590,7 @@ class CalendarWidget(QFrame):
         menu.addSeparator()
         reset_action = menu.addAction(self.tr("重置"))
         reset_action.triggered.connect(self._reset_pomodoro)
-        menu.exec_(self.mapToGlobal(pos))
+        menu.exec(self.mapToGlobal(pos))
 
     def _set_focus_minutes(self, minutes):
         if self.pomodoro.set_focus_minutes(minutes):

@@ -73,10 +73,7 @@ class TodoListWidget(QWidget, Ui_TodoListWidget):
             menu.addAction(self.actionRemoveTodo)
             menu.addAction(self.actionModifyTodoSubject)
             menu.addAction(self.actionEditTodo)
-        try:
-            getattr(menu, "exec")(QCursor.pos())
-        except AttributeError:
-            getattr(menu, "exec_")(QCursor.pos())
+        menu.exec(QCursor.pos())
 
     def editTodo(self):
         currentIndex = self.tvTodoList.currentIndex()

@@ -105,10 +105,7 @@ class Platform(QObject):
         keyname = settings.value("globalkey", "Alt+`")
         d.setGlobalKey(keyname)
         self.globalKey.removeHotKey(self.keyId)
-        try:
-            result = getattr(d, "exec")()
-        except AttributeError:
-            result = getattr(d, "exec_")()
+        result = d.exec()
         if result == QDialog.Accepted:
             keyname = d.getGlobalKey()
             settings.setValue("globalkey", keyname)

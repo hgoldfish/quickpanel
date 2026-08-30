@@ -197,7 +197,6 @@ class Widget(QWidget):
                 p = self.tryMove(self.originalTopLeft, p, 3)
                 if oldRect.topLeft() != p:
                     oldRect.moveTopLeft(p)
-                    #self.originalPos=event.globalPos()
             self.geometryChanged.emit(self.calculateLogicalRect(oldRect))
             oldRect.adjust(3, 3, -3, -3)
             self.setGeometry(oldRect)
@@ -253,10 +252,7 @@ class Widget(QWidget):
         elif event.button() == Qt.RightButton:
             menu = QMenu()
             actionDelete = menu.addAction(QIcon(":/images/remove.png"), self.tr("删除(&R)"))
-            try:
-                result = getattr(menu, "exec_")(event.globalPos())
-            except AttributeError:
-                result = getattr(menu, "exec")(event.globalPos())
+            result = menu.exec(event.globalPos())
             if result is actionDelete:
                 # 不能在事件处理函数中直接销毁自身（deleteMe -> deleteWidget -> setParent(None)，
                 # 最后一次 Python 引用释放时 C++ 对象会同步析构，而事件分发栈仍持有 this，导致 SIGSEGV）。
@@ -316,10 +312,7 @@ class SelectWidgetsDialog(QDialog, Ui_SelectWidgetsDialog):
     def selectWidgets(self, widgets):
         self.widgetsModel.setWidgets(widgets)
         self.lstWidgets.setCurrentIndex(self.widgetsModel.firstIndex())
-        try:
-            return getattr(self, "exec_")()
-        except AttributeError:
-            return getattr(self, "exec")()
+        return self.exec()
 
     def getResult(self):
         return self.widgetsModel.getResult()

@@ -9,7 +9,7 @@ class GlobalKey(QObject):
 
     def __init__(self):
         print("DEBUG: GlobalKey.__init__() called", file=sys.stderr)
-        super(QObject, self).__init__()
+        super().__init__()
         self.nextId = 0
         self.shortcuts = {}  # 存储快捷键信息: {id: (component_name, action_name)}
         self.component_name = "quickpanel"  # 组件名称

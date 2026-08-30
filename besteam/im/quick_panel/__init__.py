@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 def moveToCenter(window):
     r = window.geometry()
-    r.moveCenter(QApplication.instance().desktop().screenGeometry().center())
+    r.moveCenter(QApplication.primaryScreen().geometry().center())
     window.setGeometry(r)
 
 class WidgetManager:
@@ -393,7 +393,8 @@ class QuickPanel(QWidget, WidgetManager):
         settings.remove("background")
 
     def _makeBackground(self, image):
-        desktopSize = QApplication.desktop().screenGeometry(self).size()
+        screen = self.screen() or QApplication.primaryScreen()
+        desktopSize = screen.geometry().size()
         if desktopSize.width() < image.width() or desktopSize.height() < image.height():
             self._background_image = image.scaled(desktopSize, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         else:
@@ -404,8 +405,8 @@ class QuickPanel(QWidget, WidgetManager):
         """
         在QuickPanel中显示一个对话框。主要是为了避免对话框显示的时候，快捷面板会隐藏。
         接受两种形式的参数，其中d是对话框:
-            runDialog(d, d.exec_)
-            runDialog(d.exec_, *args, **kwargs)
+            runDialog(d, d.exec)
+            runDialog(d.exec, *args, **kwargs)
         建议使用第二种
         """
         if isinstance(args[0], QDialog):

@@ -2,10 +2,9 @@
 # -*- coding: utf-8 -*-
 import random
 import sys
-import sip
 
 from PyQt5.QtCore import Qt, QBasicTimer, pyqtSignal, QSize
-from PyQt5.QtGui import QPainter, QPixmap, QPalette, QColor, QBrush
+from PyQt5.QtGui import QGuiApplication, QPainter, QPixmap, QPalette, QColor, QBrush
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QFrame, QLCDNumber, QSizePolicy, QPushButton, QHBoxLayout, QVBoxLayout
 
 
@@ -73,10 +72,12 @@ class TetrixWindow(QWidget):
         self.setLayout(layout1)
 
         self.setWindowTitle(self.tr("Tetrix"))
-        self.resize(self.logicalDpiX() / 96 * 275, self.logicalDpiY() / 96 * 380)
+        screen = QGuiApplication.primaryScreen()
+        self.resize(screen.logicalDotsPerInchX() / 96 * 275,
+                    screen.logicalDotsPerInchY() / 96 * 380)
 
         r = self.geometry()
-        r.moveCenter(QApplication.instance().desktop().screenGeometry().center())
+        r.moveCenter(QApplication.primaryScreen().geometry().center())
         self.setGeometry(r)
 
     def createLabel(self, text):
@@ -122,7 +123,7 @@ class TetrixBoard(QFrame):
     act = pyqtSignal(int, "PyQt_PyObject")
 
     def __init__(self, parent = None):
-        super(TetrixBoard, self).__init__(parent)
+        super().__init__(parent)
         self.setStyleSheet("background-color:black;border:2px solid darkGreen;")
 
         self.timer = QBasicTimer()
@@ -212,7 +213,7 @@ class TetrixBoard(QFrame):
         self.update()
 
     def paintEvent(self, event):
-        super(TetrixBoard, self).paintEvent(event)
+        super().paintEvent(event)
 
         painter = QPainter(self)
         rect = self.contentsRect()
@@ -241,7 +242,7 @@ class TetrixBoard(QFrame):
 
     def keyPressEvent(self, event):
         if not self.isStarted or self.isPaused or self.curPiece.shape() == NoShape:
-            super(TetrixBoard, self).keyPressEvent(event)
+            super().keyPressEvent(event)
             return
 
         key = event.key()
@@ -258,7 +259,7 @@ class TetrixBoard(QFrame):
         elif key == Qt.Key_D:
             self.oneLineDown()
         else:
-            super(TetrixBoard, self).keyPressEvent(event)
+            super().keyPressEvent(event)
 
     def timerEvent(self, event):
         if event.timerId() == self.timer.timerId():
@@ -269,7 +270,7 @@ class TetrixBoard(QFrame):
             else:
                 self.oneLineDown()
         else:
-            super(TetrixBoard, self).timerEvent(event)
+            super().timerEvent(event)
 
     def clearBoard(self):
         self.board = [NoShape for i in range(TetrixBoard.BoardHeight * TetrixBoard.BoardWidth)]
@@ -362,7 +363,7 @@ class TetrixBoard(QFrame):
 
         self.pixmapNextPiece = QPixmap(dx * self.squareWidth(), dy * self.squareHeight())
         painter = QPainter(self.pixmapNextPiece)
-        painter.fillRect(self.pixmapNextPiece.rect(), self.nextPieceLabel.palette().brush(QPalette.Background))
+        painter.fillRect(self.pixmapNextPiece.rect(), self.nextPieceLabel.palette().brush(QPalette.Window))
 
         for i in range(4):
             x = self.nextPiece.x(i) - self.nextPiece.minX()
@@ -507,9 +508,6 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     window = TetrixWindow()
     window.show()
-    if hasattr(app, "exec"):
-        result = getattr(app, "exec")()
-    else:
-        result = getattr(app, "exec_")()
+    result = app.exec()
     sys.exit(result)
 

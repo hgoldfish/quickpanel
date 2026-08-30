@@ -440,7 +440,7 @@ class GlobalKey(QObject):
     instances = {}
 
     def __init__(self):
-        super(GlobalKey, self).__init__()
+        super().__init__()
         registerWindowClass()
         self.hwnd = createHotKeyWindow()
         self.nextId = 0
@@ -475,7 +475,7 @@ class GlobalKey(QObject):
             del self.keys[keyId]
 
 if __name__ == "__main__":
-    from PyQt4.QtGui import QApplication, QPlainTextEdit
+    from PyQt5.QtWidgets import QApplication, QPlainTextEdit
 
     app = QApplication([])
     w = QPlainTextEdit()
@@ -487,5 +487,5 @@ if __name__ == "__main__":
         #globalKey.removeHotKey(keyId)
         #globalKey.close()
     globalKey.catched.connect(gotKey)
-    app.exec_()
+    app.exec()
 

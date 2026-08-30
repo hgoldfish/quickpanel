@@ -3,7 +3,7 @@ import logging
 import uuid
 from PyQt5.QtCore import QAbstractListModel, QFileInfo, QModelIndex, QProcess, QSize, QUrl, Qt, \
         QStandardPaths
-from PyQt5.QtGui import QDesktopServices, QIcon, QImage, QPixmap, QCursor
+from PyQt5.QtGui import QDesktopServices, QGuiApplication, QIcon, QImage, QPixmap, QCursor
 from PyQt5.QtWidgets import QAbstractItemView, QListView, QMenu, QHBoxLayout, QFileDialog, \
         QMessageBox, QDialog, QFrame, QFileIconProvider, QAction
 from besteam.utils.sql import Table, Database
@@ -36,8 +36,9 @@ class DesktopIconWidget(QFrame):
         self.listView.setMovement(QListView.Snap)
         self.listView.setFlow(QListView.LeftToRight)
         self.listView.setResizeMode(QListView.Adjust)
-        self.listView.setGridSize(QSize(self.logicalDpiX() / 96 * 70,
-                                        self.logicalDpiY() / 96 * 70))
+        screen = QGuiApplication.primaryScreen()
+        self.listView.setGridSize(QSize(screen.logicalDotsPerInchX() / 96 * 70,
+                                        screen.logicalDotsPerInchY() / 96 * 70))
         self.listView.setViewMode(QListView.IconMode)
 
         self.quickDesktopModel = QuickDesktopModel(self.window().platform.databaseFile)
@@ -92,10 +93,7 @@ class DesktopIconWidget(QFrame):
             if not self.quickDesktopModel.isSpecialShortcut(index):
                 menu.addAction(self.actionEditShortcut)
             menu.addAction(self.actionRenameShortcut)
-        try:
-            getattr(menu, "exec")(QCursor.pos())
-        except AttributeError:
-            getattr(menu, "exec_")(QCursor.pos())
+        menu.exec(QCursor.pos())
 
     def createShortcut(self):
         d = ShortcutDialog(self)
@@ -373,10 +371,7 @@ class ShortcutDialog(QDialog, Ui_ShortcutDialog):
         self.iconPath = ""
         self.shortcutIcon = QIcon(":/images/unknown.png")
         self.btnFace.setIcon(self.shortcutIcon)
-        try:
-            return getattr(self, "exec")()
-        except AttributeError:
-            return getattr(self, "exec_")()
+        return self.exec()
 
     def showEvent(self, event):
         if self.mode == "create":
@@ -394,10 +389,7 @@ class ShortcutDialog(QDialog, Ui_ShortcutDialog):
         self.txtName.setText(shortcut["name"])
         self.txtOpenwith.setText(shortcut["openwith"])
         self.txtDir.setText(shortcut["dir"])
-        try:
-            return getattr(self, "exec_")()
-        except AttributeError:
-            return getattr(self, "exec")()
+        return self.exec()
 
     def accept(self):
         if self.txtName.text().strip() == "":
@@ -556,18 +548,12 @@ class BookmarkDialog(QDialog, Ui_BookmarkDialog):
         self.txtLink.setFocus(Qt.OtherFocusReason)
 
     def create(self):
-        try:
-            return getattr(self, "exec_")()
-        except AttributeError:
-            return getattr(self, "exec")()
+        return self.exec()
 
     def edit(self, bookmark):
         self.txtName.setText(bookmark["name"])
         self.txtLink.setText(bookmark["path"])
-        try:
-            return getattr(self, "exec_")()
-        except AttributeError:
-            return getattr(self, "exec")()
+        return self.exec()
 
     def getResult(self):
         bookmark = {}

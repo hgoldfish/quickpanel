@@ -18,7 +18,7 @@ class _Settings(QObject):
         dirty = False
 
     def __init__(self, db):
-        super(_Settings, self).__init__()
+        super().__init__()
         if type(db) is PreferenceDatabase:
             self.db = db
         else:

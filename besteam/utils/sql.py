@@ -3,16 +3,11 @@ import sqlite3
 import threading
 import pickle
 import traceback
-import types
 import sys
 import warnings
 import logging
 import functools
-try:
-    from PyQt5.QtCore import QDate, QDateTime, QObject
-    usingPyQt5 = True
-except ImportError:
-    usingPyQt5 = False
+from PyQt5.QtCore import QDate, QDateTime, QObject
 
 __all__ = ["Table", "Database", "DatabaseException", "transaction", "DataObject",
     "DataObjectProxy", "createDataObject", "createDetachedDataObject"]
@@ -99,15 +94,13 @@ def adapt_bool(b):
 def convert_bool(b):
     return b == b"T"
 
-if usingPyQt5:
-    sqlite3.register_adapter(QDateTime, adapt_QDateTime)
-    sqlite3.register_adapter(QDate, adapt_QDate)
+sqlite3.register_adapter(QDateTime, adapt_QDateTime)
+sqlite3.register_adapter(QDate, adapt_QDate)
 sqlite3.register_adapter(bool, adapt_bool)
 sqlite3.register_adapter(list, pickle_dumps)
 sqlite3.register_adapter(dict, pickle_dumps)
-if usingPyQt5:
-    sqlite3.register_converter("QDateTime", convert_QDateTime)
-    sqlite3.register_converter("QDate", convert_QDate)
+sqlite3.register_converter("QDateTime", convert_QDateTime)
+sqlite3.register_converter("QDate", convert_QDate)
 sqlite3.register_converter("bool", convert_bool)
 sqlite3.register_converter("list", pickle.loads)
 sqlite3.register_converter("dict", pickle.loads)
@@ -283,7 +276,7 @@ def createDataObject(dataObjectNameOrClass, db, record):
     """创建一个数据对象，除了本模块外，通常不直接使用DataObject的构造函数
     参数dataObjectName是数据对象的名字，比如DiaryDay之类的。或者直接可以是类型
     db是数据对象从属的数据库,record则是数据对象的值"""
-    if type(dataObjectNameOrClass) is types.ClassType and\
+    if type(dataObjectNameOrClass) is type and\
             issubclass(dataObjectNameOrClass, Table):
         table = dataObjectNameOrClass
     else:
@@ -314,21 +307,11 @@ class DataObjectProxy(DictProxy):
         assert isinstance(target, DataObject)
         DictProxy.setTarget(self, target)
 
-if usingPyQt5:
-    _QObject = QObject
-else:
-    class _QObject:
-        def __init__(self):
-            pass
-
-        def trUtf8(self, utf8Bytes):
-            return utf8Bytes.decode("utf-8")
-
 #继承于QObject的主要原因是为了使用self.tr()
-class Database(_QObject):
+class Database(QObject):
     @transaction
     def __init__(self, dbfile):
-        _QObject.__init__(self)
+        QObject.__init__(self)
         self.dbfile = dbfile
         conn = self.conn()
         cursor = conn.cursor()
