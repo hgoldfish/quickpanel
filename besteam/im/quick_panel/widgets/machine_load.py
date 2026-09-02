@@ -5,10 +5,12 @@ import sys
 import time
 import random
 import ctypes
-from PyQt5.QtCore import QPointF, QRectF, QTimer, Qt
+from PyQt5.QtCore import QPointF, QRectF, QTimer, Qt, QEvent
 from PyQt5.QtGui import QColor, QLinearGradient, QPainter, QPainterPath, QPen, QPolygonF, \
         QRadialGradient
 from PyQt5.QtWidgets import QApplication, QMenu, QToolButton, QWidget
+
+from .. import theme
 
 __all__ = ["MachineLoadWidget"]
 
@@ -17,11 +19,7 @@ HISTORY_SECONDS = 60
 # 采样间隔
 SAMPLE_INTERVAL = 500
 
-# ---- 明亮风格配色 ----
-INK_SUB = QColor(110, 122, 144)   # 次要线条/网格
-CARD = QColor(255, 255, 255, 25)  # 接近透明的卡片背景（约 90% 透明）
-CARD_BORDER = QColor(140, 150, 170, 90)
-GRID = QColor(110, 122, 144, 70)
+# ---- 图表强调色（亮/暗模式通用）----
 CYAN = QColor(0, 168, 235)
 VIOLET = QColor(124, 92, 255)
 PINK = QColor(255, 64, 160)
@@ -149,7 +147,7 @@ class ChartStyle(ColorKit):
     def _paint_timeaxis(self, p, rect):
         """浅色水平分隔线，表示历史时间流向，不含文字。"""
         axis = QRectF(rect.left(), rect.bottom() - 2, rect.width(), 2)
-        p.setPen(QPen(self.alpha(INK_SUB, 60), 1))
+        p.setPen(QPen(self.alpha(theme.ink_sub(), 60), 1))
         p.drawLine(QPointF(axis.left(), axis.center().y()), QPointF(axis.right(), axis.center().y()))
 
 
@@ -163,7 +161,7 @@ class BarChartStyle(ChartStyle):
             depth = max(6, int(area.height() * 0.10))
         bw = (area.width() - depth) / len(vals)
         floor = area.bottom()
-        p.setPen(QPen(GRID, 1))
+        p.setPen(QPen(theme.grid(), 1))
         for i in range(len(vals) + 1):
             x = area.left() + i * bw
             p.drawLine(QPointF(x, floor), QPointF(x + depth, floor - depth))
@@ -395,7 +393,7 @@ class LavaTunnelStyle(BarChartStyle):
             side = (i - (n - 1) / 2.0) / ((n - 1) / 2.0)
             arch = (1 - abs(side) * 0.55)
             tunnel.append(self.clamp(v * 0.55 + arch * 45, 5, 99))
-        p.setPen(QPen(GRID, 1))
+        p.setPen(QPen(theme.grid(), 1))
         for i in range(n + 1):
             x = area.left() + i * bw
             p.drawLine(QPointF(x, floor), QPointF(area.center().x(), floor - area.height() * 0.35))
@@ -438,7 +436,7 @@ class RadarStyle(ChartStyle):
         return min(rect.width(), rect.height()) * 0.46
 
     def _draw_grid(self, p, cx, cy, R, n_rings=4, n_rays=4):
-        p.setPen(QPen(self.alpha(INK_SUB, 55), 1))
+        p.setPen(QPen(self.alpha(theme.ink_sub(), 55), 1))
         for i in range(1, n_rings + 1):
             p.drawEllipse(QPointF(cx, cy), R * i / n_rings, R * i / n_rings)
         for a in range(0, 180, 180 // n_rays):
@@ -630,7 +628,7 @@ class CrtStyle(ChartStyle):
     def paint(self, p, rect, history, now):
         scr = self._plot_area(rect)
         p.setBrush(self.screen_color)
-        p.setPen(QPen(self.alpha(INK_SUB, 90), 1))
+        p.setPen(QPen(self.alpha(theme.ink_sub(), 90), 1))
         p.drawRoundedRect(scr, 8, 8)
         inner = scr.adjusted(4, 4, -4, -4)
         series = history.series(now)
@@ -737,18 +735,22 @@ class MachineLoadWidget(QWidget):
         self.menuButton.setPopupMode(QToolButton.InstantPopup)
         self.menuButton.setMenu(self.menu)
         self.menuButton.setToolTip(self.tr("切换显示风格"))
-        self.menuButton.setStyleSheet("""
-            QToolButton { background: rgba(255,255,255,215); border: 1px solid rgba(130,142,160,130);
-                border-radius: 4px; }
-            QToolButton:hover { background: rgba(255,255,255,255); }
-            QToolButton::menu-indicator { image: none; }
-        """)
+        self._updateMenuButtonStyle()
         self.menuButton.setFixedSize(24, 22)
         self.menuButton.move(4, 4)
+
+    def _updateMenuButtonStyle(self):
+        self.menuButton.setStyleSheet(theme.menu_button())
 
     def resizeEvent(self, event):
         QWidget.resizeEvent(self, event)
         self.menuButton.move(self.width() - self.menuButton.width() - 4, 4)
+
+    def event(self, event):
+        if event.type() == QEvent.ApplicationPaletteChange:
+            self._updateMenuButtonStyle()
+            self.update()
+        return QWidget.event(self, event)
 
     def loadStyle(self):
         key = None
@@ -788,8 +790,8 @@ class MachineLoadWidget(QWidget):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing, True)
         rect = QRectF(self.rect()).adjusted(5, 5, -5, -5)
-        painter.setPen(QPen(CARD_BORDER, 1))
-        painter.setBrush(CARD)
+        painter.setPen(QPen(theme.card_border(), 1))
+        painter.setBrush(theme.card())
         painter.drawRoundedRect(rect, 12, 12)
         inner = rect.adjusted(9, 9, -9, -9)
         self.currentStyle.paint(painter, inner, self.history, time.time())

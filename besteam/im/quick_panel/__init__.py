@@ -11,6 +11,7 @@ from PyQt5.QtWidgets import QApplication, QDialog, QMessageBox,  \
 from .layout_editor import LayoutEditor
 from .canvas import Canvas
 from .services import WidgetConfigure, QuickPanelDatabase
+from . import theme
 
 __all__ = ["QuickPanel"]
 
@@ -400,6 +401,11 @@ class QuickPanel(QWidget, WidgetManager):
         else:
             self._background_image = image
         self.resize(self._background_image.size())
+        if theme.apply_for_image(self._background_image):
+            self.update()
+            for widget in getattr(self, "widgets", []):
+                if widget.widget is not None:
+                    widget.widget.update()
 
     def runDialog(self, *args, **kwargs):
         """
@@ -447,14 +453,14 @@ class QuickPanel(QWidget, WidgetManager):
         QDialog.paintEvent(d, event)
         pen = QPen()
         pen.setWidth(2)
-        pen.setColor(QColor(200, 200, 200))
+        pen.setColor(theme.dialog_border())
         rect = d.rect()
         rect = rect.adjusted(0, 0, -1, -1)
         painter = QPainter(d)
         painter.setRenderHint(QPainter.Antialiasing, True)
         painter.setPen(pen)
         painter.setOpacity(0.8)
-        painter.setBrush(QBrush(QColor(Qt.white)))
+        painter.setBrush(QBrush(theme.dialog_bg()))
         painter.drawRoundedRect(rect, 15, 15)
 
 

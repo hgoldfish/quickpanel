@@ -4,6 +4,7 @@ from PyQt5.QtCore import QAbstractListModel, QModelIndex, QPoint, QRect, Qt, QTi
 from PyQt5.QtGui import QBrush, QColor, QIcon, QPainter, QPen
 from PyQt5.QtWidgets import QDialog, QFrame, QMenu, QSizePolicy, QWidget
 from .Ui_selectwidgets import Ui_SelectWidgetsDialog
+from . import theme
 
 __all__ = ["LayoutEditor"]
 
@@ -24,7 +25,7 @@ class LayoutEditor(QFrame):
         painter = QPainter(self)
         painter.setOpacity(0.9)
         pen = QPen()
-        pen.setColor(Qt.white)
+        pen.setColor(theme.layout_grid())
         painter.setPen(pen)
         while factorForWidth * column < self.width():
             painter.drawLine(factorForWidth * column, 0, factorForWidth * column, self.height())
@@ -145,17 +146,17 @@ class Widget(QWidget):
         QWidget.paintEvent(self, event)
         pen = QPen()
         pen.setWidth(2)
-        pen.setColor(QColor(200, 200, 200))
+        pen.setColor(theme.dialog_border())
         rect = self.rect()
         rect = rect.adjusted(0, 0, -1, -1)
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing, True)
         painter.setPen(pen)
         painter.setOpacity(0.5)
-        painter.setBrush(QBrush(QColor(Qt.white)))
+        painter.setBrush(QBrush(theme.dialog_bg()))
         painter.drawRoundedRect(rect, 15, 15)
         painter.setOpacity(1)
-        pen.setColor(Qt.black)
+        pen.setColor(theme.text())
         painter.setPen(pen)
         text = self.name + "\n" + self.description
         painter.drawText(self.rect(), Qt.AlignHCenter | Qt.AlignVCenter, text)

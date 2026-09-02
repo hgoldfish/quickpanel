@@ -18,6 +18,8 @@ from PyQt5.QtCore import QPointF, QRectF, Qt, QTimer
 from PyQt5.QtGui import QColor, QFont, QFontMetrics, QPainter, QPen
 from PyQt5.QtWidgets import QFrame, QMenu, QMessageBox
 
+from .. import theme
+
 __all__ = ["CalendarWidget"]
 
 
@@ -361,11 +363,7 @@ class CalendarWidget(QFrame):
 
     _WEEK_CN = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"]
 
-    # 配色（延续 machine_load 的明亮风格）
-    INK_MAIN = QColor(38, 48, 66)
-    INK_SUB = QColor(110, 122, 144)
-    INK_FAINT = QColor(150, 160, 178)
-    DIVIDER = QColor(150, 160, 178, 60)
+    # 强调色（亮/暗模式通用）
     VIOLET = QColor(124, 92, 255)
     ORANGE = QColor(255, 140, 30)
     TOMATO = QColor(255, 82, 82)
@@ -462,7 +460,7 @@ class CalendarWidget(QFrame):
         now = datetime.now()
 
         # 分隔线：三栏两条，两栏一条
-        painter.setPen(QPen(self.DIVIDER, 1))
+        painter.setPen(QPen(theme.divider(), 1))
         painter.drawLine(QPointF(time_rect.right() + 6, time_rect.top() + 2),
                          QPointF(time_rect.right() + 6, time_rect.bottom() - 2))
         if date_rect is not None:
@@ -471,7 +469,7 @@ class CalendarWidget(QFrame):
 
         # 时间块
         self._draw_text(painter, time_rect, now.strftime("%H:%M"),
-                        self.INK_MAIN, self.FONT_TIME, True, Qt.AlignCenter)
+                        theme.text(), self.FONT_TIME, True, Qt.AlignCenter)
 
         # 日期块（居中）
         if date_rect is not None:
@@ -487,7 +485,7 @@ class CalendarWidget(QFrame):
         context = self.terms.context(now)
 
         rows = [("%d月%d日 %s" % (now.month, now.day, self._WEEK_CN[now.weekday()]),
-                 self.INK_SUB, self.FONT_DATE, False)]
+                 theme.text_sub(), self.FONT_DATE, False)]
         if lunar:
             rows.append(("农历" + str(lunar), self.VIOLET, self.FONT_LUNAR, True))
         if context:
@@ -531,15 +529,15 @@ class CalendarWidget(QFrame):
         self._draw_text(painter,
                         QRectF(cx - ring_r, cy - 10, ring_r * 2, 16),
                         "%02d:%02d" % (remaining // 60, remaining % 60),
-                        self.INK_MAIN, self.FONT_POMO_TIME, True, Qt.AlignCenter)
+                        theme.text(), self.FONT_POMO_TIME, True, Qt.AlignCenter)
         self._draw_text(painter,
                         QRectF(cx - ring_r, cy + 4, ring_r * 2, 12),
-                        "剩余", self.INK_FAINT, self.FONT_POMO_SUB, False, Qt.AlignCenter)
+                        "剩余", theme.text_faint(), self.FONT_POMO_SUB, False, Qt.AlignCenter)
 
         state_y = top + ring_h + gap
         self._draw_text(painter,
                         QRectF(rect.x(), state_y, rect.width(), state_h),
-                        self._state_text(), self.INK_MAIN, self.FONT_POMO_STATE, True,
+                        self._state_text(), theme.text(), self.FONT_POMO_STATE, True,
                         Qt.AlignCenter)
 
         dots_y = state_y + state_h + gap
