@@ -208,6 +208,8 @@ def copy_python_sources(repo, app):
         if os.path.isfile(src):
             shutil.copy2(src, os.path.join(app, name))
             log("  [copy] %s" % name)
+        else:
+            log("  [!!] 仓库缺少 %s，产物将不完整" % name)
     # besteam 包（全部 .py，跳过 __pycache__）
     for root, dirs, files in os.walk(os.path.join(repo, "besteam")):
         dirs[:] = [d for d in dirs if d != "__pycache__"]
@@ -222,7 +224,7 @@ def copy_python_sources(repo, app):
 
 
 def write_readme(app):
-    readme = u"""QuickPanel（Windows 7 独立版）
+    readme = """QuickPanel（Windows 7 独立版）
 ==========================
 
 双击 QuickPanel.exe 即可启动。启动后系统托盘出现小丑鱼图标，按 Alt+` 呼出
@@ -288,7 +290,8 @@ def validate(app):
     check(os.path.isfile(os.path.join(site, "PyQt5", "Qt5", "plugins",
                                       "platforms", "qwindows.dll")),
           "qwindows.dll 平台插件存在")
-    for f in ("start_quickpanel.py", "quickpanel_rc.py", "background.png"):
+    for f in ("start_quickpanel.py", "quickpanel_rc.py", "tetrix.py",
+              "background.png"):
         check(os.path.isfile(os.path.join(app, f)), "%s 存在" % f)
     check(os.path.isdir(os.path.join(app, "besteam")), "besteam/ 存在")
     if not ok:
@@ -337,11 +340,12 @@ def build(args):
     extract_7z(pystand_7z, stage)
     srcdir = None
     for name in os.listdir(stage):
-        if os.path.isdir(os.path.join(stage, name)):
-            srcdir = os.path.join(stage, name)
+        cand = os.path.join(stage, name)
+        if os.path.isdir(cand) and os.path.isfile(os.path.join(cand, "PyStand.exe")):
+            srcdir = cand
             break
     if srcdir is None:
-        sys.exit("环境包解压后未找到内容目录: %s" % stage)
+        sys.exit("环境包解压后未找到含 PyStand.exe 的目录: %s" % stage)
 
     print("===== 3/4 组装 QuickPanel =====")
     # 拷贝整个环境（runtime/ site-packages/ 等）
