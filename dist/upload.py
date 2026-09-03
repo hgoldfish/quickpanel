@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Upload build artifacts to toysite release API."""
+"""Upload build artifacts to toysite release API (Django session auth)."""
 
 import argparse
-import base64
 import getpass
 import hashlib
+import http.cookiejar
 import json
 import os
 import sys
@@ -15,12 +15,38 @@ DEFAULT_BASE_URL = "https://toys.hgoldfish.com"
 DEFAULT_USER = "goldfish"
 
 
-def basic_auth_header(username: str, password: str) -> str:
-    token = base64.b64encode(f"{username}:{password}".encode()).decode("ascii")
-    return "Basic " + token
+def _login(base_url, opener, cookies, username, password):
+    """POST /api/auth/login,建立 Django session 并保存 csrftoken cookie。"""
+    body = json.dumps({"username": username, "password": password}).encode("utf-8")
+    req = urllib.request.Request(
+        base_url.rstrip("/") + "/api/auth/login",
+        data=body,
+        method="POST",
+        headers={"Content-Type": "application/json"},
+    )
+    try:
+        with opener.open(req, timeout=30) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as exc:
+        detail = exc.read().decode("utf-8", "replace")
+        print("login failed (%s): %s" % (exc.code, detail), file=sys.stderr)
+        sys.exit(1)
+    if not data.get("ok"):
+        print("login failed: %s" % data, file=sys.stderr)
+        sys.exit(1)
+    if not _csrf_token(cookies):
+        print("login succeeded but no csrftoken cookie was set; uploads would fail", file=sys.stderr)
+        sys.exit(1)
 
 
-def upload(base_url, auth_header, app_id, version, platform, file_path, notes, rollout_percent):
+def _csrf_token(cookies):
+    for cookie in cookies:
+        if cookie.name == "csrftoken":
+            return cookie.value
+    return ""
+
+
+def upload(base_url, opener, cookies, app_id, version, platform, file_path, notes, rollout_percent):
     boundary = "----toysite-upload-%016x" % (hash(os.urandom(8)) & 0xFFFFFFFFFFFFFFFF)
     filename = os.path.basename(file_path)
 
@@ -63,13 +89,15 @@ def upload(base_url, auth_header, app_id, version, platform, file_path, notes, r
         data=payload,
         method="POST",
         headers={
-            "Authorization": auth_header,
             "Content-Type": "multipart/form-data; boundary=" + boundary,
+            "X-CSRFToken": _csrf_token(cookies),
+            # https 下 Django CSRF 校验要求 Origin/Referer 同源
+            "Referer": base_url.rstrip("/") + "/login/",
         },
     )
 
     try:
-        with urllib.request.urlopen(req, timeout=600) as resp:
+        with opener.open(req, timeout=600) as resp:
             data = json.loads(resp.read().decode("utf-8"))
             status = resp.status
     except urllib.error.HTTPError as exc:
@@ -114,11 +142,15 @@ def main():
         sys.exit(1)
 
     password = getpass.getpass("Password for %s: " % args.user)
-    auth = basic_auth_header(args.user, password)
+
+    cookies = http.cookiejar.CookieJar()
+    opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cookies))
+    _login(args.base_url, opener, cookies, args.user, password)
 
     upload(
         args.base_url,
-        auth,
+        opener,
+        cookies,
         args.app,
         args.version,
         args.platform,
