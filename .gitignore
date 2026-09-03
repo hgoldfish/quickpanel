@@ -1,5 +1,4 @@
 __pycache__/
 *.pyc
-dist/cache/
-dist/QuickPanel/
-dist/*.zip
+.hg/
+dist/

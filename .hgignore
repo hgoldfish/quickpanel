@@ -1,6 +1,13 @@
 syntax: glob
-__pycache__/
-*.pyc
+_eric5project/quickpanel.e4t
+_eric5project/quickpanel.e4q
+**/Ui_*.py
+**/Thumbs.db
+__pycache__
+quickpanel.e4p
+quickpanel_rc.py
+.git/*
+.gitignore
 dist/cache/
 dist/QuickPanel/
-dist/*.zip
+dist/QuickPanel-win7.zip
