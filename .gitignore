@@ -1,4 +1,11 @@
+_eric5project/quickpanel.e4t
+_eric5project/quickpanel.e4q
+**/Ui_*.py
+**/Thumbs.db
 __pycache__/
 *.pyc
 .hg/
-dist/
+.hgignore
+dist/cache/
+dist/QuickPanel/
+dist/QuickPanel-win7.zip
