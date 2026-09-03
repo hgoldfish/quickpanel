@@ -22,15 +22,21 @@ deploys a Python app together with an Embedded Python runtime. Build a
 standalone QuickPanel directory which runs on Windows 7 (SP1) without any
 Python installation:
 
-    $ python3 build_pystand.py            # build dist/QuickPanel/
-    $ python3 build_pystand.py --zip      # also pack a zip archive
+    $ python3 dist/build.py            # build dist/QuickPanel/
+    $ python3 dist/build.py --zip      # also pack dist/QuickPanel-win7.zip
 
 The script downloads the ready-made environment package published by the
 PyStand author (`PyStand-py38-pyqt5-lite`, a 32-bit Python 3.8.10 embedded
 runtime + PyQt5/Qt 5.15 lite, so it runs on both 32-bit and 64-bit Windows 7),
 copies the QuickPanel sources into it and renames the launcher to
-`QuickPanel.exe`. Copy `dist/QuickPanel/` to the Windows 7 machine and
-double-click `QuickPanel.exe`.
+`QuickPanel.exe`. The download is cached under `dist/cache/` (kept in
+`.gitignore`/`.hgignore`) and reused on later builds. Copy `dist/QuickPanel/`
+to the Windows 7 machine and double-click `QuickPanel.exe`.
+
+To publish the artifact to the toysite release API (Basic auth, expects the
+`goldfish` user), use the sibling uploader:
+
+    $ python3 dist/upload.py dist/QuickPanel-win7.zip --version 1.0.1 --notes "..."
 
 If Windows reports a missing `vcruntime140.dll`/`msvcp140.dll`, install the
 "Microsoft Visual C++ 2015-2022 Redistributable" once.

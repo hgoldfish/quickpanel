@@ -1,0 +1,6 @@
+syntax: glob
+__pycache__/
+*.pyc
+dist/cache/
+dist/QuickPanel/
+dist/*.zip

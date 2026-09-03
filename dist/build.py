@@ -14,15 +14,22 @@ Python）+ PyQt5/Qt 5.15 精简运行环境。压缩 15MB、解压 48MB。整套
 32 位（Win32），32 位与 64 位的 Windows 7 都能直接运行，无需区分架构，
 也不用另外准备 Python 或 PyQt5。
 
-用法：
-    python3 build_pystand.py                # 制作 dist/QuickPanel/
-    python3 build_pystand.py --zip          # 顺带压成 dist/QuickPanel-win7.zip
-    python3 build_pystand.py --keep         # 不清除旧产物，直接覆盖组装
-    python3 build_pystand.py --cache DIR    # 自定义下载缓存目录
+用法（脚本与 upload.py 同放在 dist/ 并已纳入版本库）：
+    cd dist
+    python3 build.py                       # 制作 QuickPanel/
+    python3 build.py --zip                 # 顺带压成 QuickPanel-win7.zip
+    python3 build.py --keep                # 不清除旧产物，直接覆盖组装
+    python3 build.py --cache DIR           # 自定义下载缓存目录
+    python3 dist/build.py                  # 也可在仓库根直接调用
 
-产物目录：
+下载的 7z 环境包缓存到 <out>/cache/（默认 dist/cache/）。构建只重建
+QuickPanel/ 产物目录，从不删除缓存；缓存校验通过后再次构建直接复用，
+无需重新下载。dist/cache/、dist/QuickPanel/、dist/*.zip 已写入
+.gitignore / .hgignore（缓存保留在本地但不入库）。
 
-    dist/QuickPanel/
+产物目录（默认输出到本脚本所在目录，即 dist/）：
+
+    QuickPanel/
     ├── QuickPanel.exe        PyStand 启动器（由 PyStand.exe 改名而来）
     ├── QuickPanel.int        入口：import start_quickpanel 并运行 main()
     ├── runtime/              Python 3.8.10 Embedded（来自官方环境包）
@@ -318,13 +325,17 @@ def print_tree(app):
 
 
 def build(args):
-    repo = os.path.dirname(os.path.abspath(__file__))
-    out = os.path.abspath(args.out)
+    # 本脚本随仓库放在 dist/ 下：仓库根是它的上一级目录。
+    here = os.path.dirname(os.path.abspath(__file__))
+    repo = os.path.dirname(here)
+    out = os.path.abspath(args.out) if args.out else here
     cache = os.path.abspath(args.cache) if args.cache else os.path.join(out, "cache")
     app = os.path.join(out, APP_NAME)
+    # 下载缓存目录刻意保留：环境包（约 15MB）只下载一次，之后构建复用。
     os.makedirs(cache, exist_ok=True)
 
     if os.path.isdir(app) and not args.keep:
+        # 只重建产物目录；cache/ 内的下载包不动。
         log("清除旧产物: %s" % app)
         shutil.rmtree(app)
     os.makedirs(app, exist_ok=True)
@@ -386,6 +397,7 @@ def build(args):
     print_tree(app)
     total = total_size(app)
     print("\n完成：%s（共 %.1f MB，解压后）" % (app, total / 1048576.0))
+    print("下载包已缓存于 %s，下次构建直接复用，不会重新下载。" % cache)
     print("把整个 QuickPanel 目录拷贝到 Windows 7 上，双击 QuickPanel.exe 即可。")
     if args.zip:
         zip_path = os.path.join(out, "%s-win7.zip" % APP_NAME)
@@ -405,7 +417,8 @@ def main():
                     "直接使用韦易笑发布的现成 PyStand-py38-pyqt5-lite 环境包，"
                     "32 位环境同时兼容 32/64 位 Win7。",
         formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--out", default="dist", help="产物根目录（默认 dist）")
+    parser.add_argument("--out", default=None,
+                        help="产物根目录（默认本脚本所在目录，即 dist/）")
     parser.add_argument("--cache", default=None,
                         help="下载缓存目录（默认 <out>/cache）")
     parser.add_argument("--keep", action="store_true",
