@@ -64,7 +64,7 @@ APP_NAME = "QuickPanel"
 # 说明：PyStand 在 C 层就把 exe 同级的 '.'、'site-packages' 等目录加进了
 # sys.path，并设置环境变量 PYSTAND / PYSTAND_HOME / PYSTAND_RUNTIME。
 INT_TEMPLATE = '''# -*- coding: utf-8 -*-
-# QuickPanel.int - PyStand 入口（由仓库根目录 build_pystand.py 生成）。
+# QuickPanel.int - PyStand 入口（由仓库 dist/build.py 生成）。
 # PyStand 会把本文件当作 __main__ 执行；把本文件改名复制为
 # _pystand_static.int 可令 exe 随意改名（PyStand 优先加载静态入口）。
 import os
@@ -259,7 +259,7 @@ def write_readme(app):
   * 双击没反应：请把整个目录放到纯英文路径（例如 D:\\QuickPanel）再试；
     仍然不行就在 cmd.exe 里运行 QuickPanel.exe 看输出，或查看 quickpanel.log。
   * 想换程序图标：用 Resource Hacker 直接替换 QuickPanel.exe 的资源图标。
-  * 重新打包：在开发机上执行 python3 build_pystand.py 即可。
+  * 重新打包：在开发机上执行 python3 dist/build.py 即可。
 """
     path = os.path.join(app, "QuickPanel-README.txt")
     with open(path, "w", encoding="utf-8") as f:
